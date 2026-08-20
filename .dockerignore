@@ -1,0 +1,17 @@
+# 不打包进镜像的文件
+huiju-decoded/
+generated-images/
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.pid
+fan.log
+.git/
+.gitignore
+Dockerfile
+.dockerignore
+docker-compose.yml
+publish.sh
+run.sh
+*.md

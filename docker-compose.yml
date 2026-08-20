@@ -1,0 +1,21 @@
+# ============================================================
+# AIRMATE FS35-SRD133 风扇控制器 · docker-compose
+# 目标：RK3588 (OpenWRT) 通过 compose 直接部署
+# 容器内 bleak 经宿主蓝牙控制风扇，需透传 dbus + usb
+# ============================================================
+services:
+  airmate-fan:
+    image: yinheng1989/airmate-fan:latest
+    container_name: airmate-fan
+    # host 网络：web_server 监听 0.0.0.0:8080，直接暴露到宿主
+    network_mode: host
+    # 蓝牙所需权限与设备透传
+    privileged: true
+    restart: unless-stopped
+    volumes:
+      # D-Bus 系统总线（bluez/bluetoothd 通信必需）
+      - /run/dbus:/run/dbus
+      # USB 蓝牙适配器（部分 USB 蓝牙棒需要）
+      - /dev/bus/usb:/dev/bus/usb
+    # 若宿主没跑 bluetoothd，可让容器自己起（需 privileged）
+    # command: ["sh", "-c", "service dbus start && (bluetoothd &) && exec python controllers/web_server.py"]
