@@ -23,20 +23,22 @@ struct FanBladesView: View {
     @State private var angle: Double = 0
     /// 上次帧的时间戳（用于按真实时间差推进角度，转速稳定不跳变）
     @State private var lastTick: Date? = nil
-    /// 当前转速系数（0~1）：用于缓启/缓停的平滑过渡
-    @State private var speedFactor: Double = 0
-    /// 当前实际动画时长（秒）：向目标时长平滑过渡，实现调速时的平滑加速/减速
-    @State private var currentDuration: Double = 3.2
+    /// 当前速度值（0~100）：向目标值匀速逼近，转速由其线性决定
+    @State private var currentPercent: Double = 0
 
     private var isSpinning: Bool { power && speed > 0 }
-    /// 目标动画时长（由 speed 决定）：时长越短转速越快
-    private var targetDuration: Double { max(0.4, 3.2 - Double(speed) * 0.22) }
 
-    /// 缓启/缓停的速率：每秒系数变化量（约 1.2s 完成一次 0↔1 过渡）
-    private let rampRate: Double = 0.85
-    /// 调速过渡速率：每秒向目标时长逼近的比例（越大越快）
-    /// 1.8 让模式切换这种大跨度转速变化也有明显、柔和的过渡（约 0.5~0.8s 完成）
-    private let durationRamp: Double = 1.8
+    /// 档位 → 0~100 目标值（线性映射：13档=100，关机=0）
+    private var targetPercent: Double {
+        isSpinning ? Double(min(max(speed, 1), 13)) / 13.0 * 100.0 : 0
+    }
+
+    /// 速度变化速率：每秒 currentPercent 向 targetPercent 匀速移动的单位数
+    /// 100 个单位（0→100 或 100→0）约 1.4 秒走完；档位跨度越大，过渡时间越长
+    private let percentRate: Double = 70
+
+    /// 满速（100%）时每转一圈所需秒数（时长越短越快）
+    private let minDuration: Double = 0.4
 
     var body: some View {
         GeometryReader { geo in
@@ -87,29 +89,19 @@ struct FanBladesView: View {
         }
     }
 
-    /// 每帧推进：speedFactor 平滑逼近目标值，currentDuration 平滑逼近目标时长，再按两者旋转
+    /// 每帧推进：currentPercent 向 targetPercent 匀速逼近，转速由其线性决定。
+    /// 频繁切换档位自然衔接：只改 target，不重置 current，从当前值继续向新目标匀速移动。
     private func advance(by dt: Double) {
-        // 1. 缓启/缓停系数
-        let target: Double = isSpinning ? 1 : 0
-        if speedFactor < target {
-            speedFactor = min(speedFactor + rampRate * dt, target)
-        } else if speedFactor > target {
-            speedFactor = max(speedFactor - rampRate * dt, target)
+        // 1. 匀速逼近目标值
+        if currentPercent < targetPercent {
+            currentPercent = min(currentPercent + percentRate * dt, targetPercent)
+        } else if currentPercent > targetPercent {
+            currentPercent = max(currentPercent - percentRate * dt, targetPercent)
         }
-        // 2. 调速平滑过渡：仅在「正在旋转」时让 currentDuration 跟随 targetDuration。
-        //    缓停/关机时冻结 currentDuration（保持关停前的转速），只用 speedFactor 降速，
-        //    避免「先突变再降速」的怪现象。
-        if isSpinning && currentDuration != targetDuration {
-            let diff = targetDuration - currentDuration
-            currentDuration += diff * durationRamp * dt
-            // 足够接近时直接落到目标，避免无限逼近
-            if abs(currentDuration - targetDuration) < 0.01 {
-                currentDuration = targetDuration
-            }
-        }
-        // 3. 推进角度：每转一圈 360°，按 currentDuration 与 speedFactor 换算
-        if speedFactor > 0 {
-            angle = (angle + dt / currentDuration * 360 * speedFactor).truncatingRemainder(dividingBy: 360)
+        // 2. 转速由 currentPercent 线性映射：0% 停，100% 满速（每圈 minDuration 秒）
+        if currentPercent > 0 {
+            let duration = minDuration / max(currentPercent / 100.0, 0.001)
+            angle = (angle + dt / duration * 360).truncatingRemainder(dividingBy: 360)
         }
     }
 
