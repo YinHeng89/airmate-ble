@@ -96,8 +96,10 @@ struct FanBladesView: View {
         } else if speedFactor > target {
             speedFactor = max(speedFactor - rampRate * dt, target)
         }
-        // 2. 调速平滑过渡：currentDuration 向 targetDuration 逼近（指数衰减）
-        if currentDuration != targetDuration {
+        // 2. 调速平滑过渡：仅在「正在旋转」时让 currentDuration 跟随 targetDuration。
+        //    缓停/关机时冻结 currentDuration（保持关停前的转速），只用 speedFactor 降速，
+        //    避免「先突变再降速」的怪现象。
+        if isSpinning && currentDuration != targetDuration {
             let diff = targetDuration - currentDuration
             currentDuration += diff * durationRamp * dt
             // 足够接近时直接落到目标，避免无限逼近
