@@ -131,6 +131,31 @@ checksum = (sum(frame[1:13]) + 4) & 0xFF   ← 早期漏了 +4，已修正
 - **风模式切换**：标准风/自然风/睡眠风/暴风，切换时立即切换档位列表。
 - 已知坑：浏览器翻译插件会干扰点击和文字渲染（非代码问题）。
 
+### 7.1 前端样式迭代记录（2026-08-20）
+
+本轮重点重做了网页版可视化的扇叶图案与控件样式，全部集中在 `static/`（`index.html` / `style.css` / `app.js`）。
+
+**扇叶 SVG 重设计**
+- 斜叶（样式 B）原本图案不好看，最终采用用户提供的五叶风扇 SVG 参考：5 片 `.blade-slanted` div，每片内部 `<g transform="translate(512 512)"><g transform="rotate(...) scale(0.92)">` 含 `blade-fill` + `blade-highlight` 两个 path。
+- 关键参数：viewBox `0 0 1024 1024`、根部 `translate(512 512)` 居中、`scale(0.92)` 控制整体缩放与白色间隙宽度（先试过 0.82，最终 0.92，缩小后叶片间隙更宽更透气）。
+- 正叶（样式 A）原本是另一套图案，已**完全替换为与斜叶一模一样的 SVG 结构**（仅 class 改为 `blade-fill-a` / `blade-highlight-a`，渐变 id 改为 `bldGradA`），两种样式视觉一致。
+- 旋转角度：-90 / -18 / 54 / 126 / 198（每片间隔 72°，共五叶）。
+- 注意：外层 CSS 不再额外 rotate，避免与 SVG 内部 rotate 叠加导致错位。
+
+**语音功能前端隐藏（保留后端）**
+- 用户实机语音模块因容易误识别已被**拆线**，故前端隐藏语音开关。
+- `index.html` 语音开关整段用 `<!-- -->` 注释，备注「本设备的语音模块因容易误识别已被用户拆线，但功能本身是支持的」。
+- `app.js` 同步注释了 `$('voice').onchange` 事件绑定与 `paintUI` 里的 `$('voice').checked = uiState.voice;`，避免元素不存在报错。
+- 后端 `web_server.py` 的 `/api/voice` 和 `cmd_voice` **未动**，功能仍在，仅前端不暴露。
+
+**控件样式统一**
+- `mode-btn`（风模式按钮）与 `timer-select`（定时选择框）统一为玻璃材质（`backdrop-filter` 毛玻璃）+ `--radius-md`（16px）圆角，消除此前圆角/材质不一致的割裂感。
+- 抽了 CSS 变量统一管理（背景用 `--glass-bg`、模糊用 `--glass-blur`），下拉箭头用内联灰色 SVG `background-image`，去掉系统原生箭头。
+
+**提交**
+- git 提交 `e4e626b`：「feat: 拆分web前端...重设计斜叶风扇SVG」（含本轮前端改动）。
+- 目录讨论：`control_airmate_v2.py` 与 `web_server.py` 互不 import，是两份独立控制器；暂未移动，仍留在 `controllers/`。
+
 ---
 
 ## 8. 已裁剪功能（实机确认不支持）

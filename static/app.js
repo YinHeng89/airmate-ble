@@ -94,7 +94,8 @@ function paintUI() {
     b.className = 'mode-btn' + (active ? ' active' : '');
   });
   $('swing').checked = uiState.swing;
-  $('voice').checked = uiState.voice;
+  // 语音开关已禁用（本设备语音模块已拆线，但功能支持）
+  // $('voice').checked = uiState.voice;
   $('display').checked = uiState.display;
   $('rawText').textContent = uiState.raw || '';
 }
@@ -358,13 +359,14 @@ $('swing').onchange = e => {
     paintUI();
   });
 };
-$('voice').onchange = e => {
-  const v = e.target.checked;
-  optimistic('voice', { value: v }, () => {
-    uiState.voice = v;
-    paintUI();
-  });
-};
+// 语音开关已禁用：本设备的语音模块因容易误识别已被用户拆线，但功能本身是支持的
+// $('voice').onchange = e => {
+//   const v = e.target.checked;
+//   optimistic('voice', { value: v }, () => {
+//     uiState.voice = v;
+//     paintUI();
+//   });
+// };
 $('display').onchange = e => {
   const v = e.target.checked;
   optimistic('display', { value: v }, () => {

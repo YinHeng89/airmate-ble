@@ -180,12 +180,21 @@ checksum = (sum(frame[1:13]) + 4) & 0xFF
 
 | 脚本 | 用途 |
 |------|------|
-| `web_server.py` | **网页版控制器**（推荐，可视化风扇 + 完整功能） |
-| `control_airmate_v2.py` | 命令行交互式控制器 |
-| `monitor_airmate.py` | 状态监听（实时显示 AE22 notify + 解析） |
-| `scan_airmate.py` | 扫描附近 BLE 设备 |
-| `inspect_airmate.py` | 枚举 GATT 服务 |
-| `detect_airmate.py` | 探测设备广播 UUID 和完整 GATT |
+| `controllers/web_server.py` | **网页版控制器**（推荐，可视化风扇 + 完整功能） |
+| `controllers/control_airmate_v2.py` | 命令行交互式控制器（与 web_server 互不依赖，独立实现） |
+| `tools/monitor_airmate.py` | 状态监听（实时显示 AE22 notify + 解析 + 回放测试） |
+| `tools/scan_airmate.py` | 扫描附近 BLE 设备 |
+| `tools/inspect_airmate.py` | 枚举 GATT 服务 |
+| `tools/detect_airmate.py` | 探测设备广播 UUID 和完整 GATT |
+
+> 目录区分：`controllers/` 放可直接控制风扇的程序（网页 / CLI），`tools/` 放调试探测脚本。
+
+### 网页版前端（static/）
+
+- `index.html` / `style.css` / `app.js` 为前端三件套，由 `web_server.py` 直接托管。
+- 可视化风扇：两种扇叶样式（正叶 / 斜叶）**共用同一套五叶 SVG**（viewBox `0 0 1024 1024`，根部 `translate(512 512)`，`scale(0.92)` 控制缩放与间隙），5 片 rotate `-90 / -18 / 54 / 126 / 198`。
+- 语音开关：前端已**隐藏**（用户实机语音模块因误识别已拆线），后端 `/api/voice` 仍保留可用。
+- 控件样式：`mode-btn` 与 `timer-select` 统一为玻璃材质 + 16px 圆角。
 
 ### 使用
 
@@ -194,12 +203,12 @@ checksum = (sum(frame[1:13]) + 4) & 0xFF
 pip install -r requirements.txt
 
 # 2. 网页版（推荐）
-python web_server.py
+python controllers/web_server.py
 # 然后浏览器访问 http://localhost:8080
 # 局域网设备访问 http://<本机IP>:8080
 
 # 3. 命令行版
-python control_airmate_v2.py
+python controllers/control_airmate_v2.py
 ```
 
 > 依赖仅需 `bleak`。web_server.py 使用 Python 标准库实现 Web 服务，无额外依赖。
