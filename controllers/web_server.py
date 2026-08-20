@@ -421,9 +421,9 @@ class Handler(BaseHTTPRequestHandler):
         elif route == "/favicon.ico":
             self._send_file(os.path.join(STATIC_DIR, "favicon.ico"),
                             "image/x-icon")
-        elif route == "/favicon.svg":
-            self._send_file(os.path.join(STATIC_DIR, "favicon.svg"),
-                            "image/svg+xml")
+        elif route == "/favicon.png":
+            self._send_file(os.path.join(STATIC_DIR, "favicon.png"),
+                            "image/png")
         elif route == "/api/state":
             if not self._check_auth():
                 self._send_json({"error": "unauthorized"}, 401)
