@@ -23,9 +23,20 @@ struct FanBladesView: View {
     @State private var angle: Double = 0
     /// 上次帧的时间戳（用于按真实时间差推进角度，转速稳定不跳变）
     @State private var lastTick: Date? = nil
+    /// 当前转速系数（0~1）：用于缓启/缓停的平滑过渡
+    @State private var speedFactor: Double = 0
+    /// 当前实际动画时长（秒）：向目标时长平滑过渡，实现调速时的平滑加速/减速
+    @State private var currentDuration: Double = 3.2
 
     private var isSpinning: Bool { power && speed > 0 }
-    private var duration: Double { max(0.4, 3.2 - Double(speed) * 0.22) }
+    /// 目标动画时长（由 speed 决定）：时长越短转速越快
+    private var targetDuration: Double { max(0.4, 3.2 - Double(speed) * 0.22) }
+
+    /// 缓启/缓停的速率：每秒系数变化量（约 1.2s 完成一次 0↔1 过渡）
+    private let rampRate: Double = 0.85
+    /// 调速过渡速率：每秒向目标时长逼近的比例（越大越快）
+    /// 1.8 让模式切换这种大跨度转速变化也有明显、柔和的过渡（约 0.5~0.8s 完成）
+    private let durationRamp: Double = 1.8
 
     var body: some View {
         GeometryReader { geo in
@@ -57,21 +68,46 @@ struct FanBladesView: View {
             .position(x: geo.size.width / 2, y: geo.size.height / 2)
         }
         .aspectRatio(1, contentMode: .fit)
-        // 用 TimelineView 按真实时间驱动旋转，代替 repeatForever（后者对 @State 不稳定）
-        // 60fps 保证旋转顺滑；配合 drawingGroup 位图化叶片，重绘开销极低，不会掉帧
+        // 持续驱动的 TimelineView：每帧按真实时间差推进角度，并用 speedFactor 做缓启/缓停。
+        // 目标：转=1，停=0；speedFactor 每帧向目标平滑逼近，避免突然启动/停止。
         .overlay {
-            if isSpinning {
-                TimelineView(.animation(minimumInterval: 1.0 / 60.0, paused: !isSpinning)) { context in
-                    Color.clear
-                        .onAppear { lastTick = context.date }
-                        .onChange(of: context.date) { _, newDate in
-                            let dt = lastTick.map { newDate.timeIntervalSince($0) } ?? 0
-                            lastTick = newDate
-                            // 每转一圈 360°，dt 内推进 angle；按当前 duration 换算，保证转速稳定
-                            angle = (angle + dt / duration * 360).truncatingRemainder(dividingBy: 360)
-                        }
-                }
+            TimelineView(.animation(minimumInterval: 1.0 / 60.0)) { context in
+                Color.clear
+                    .onAppear { lastTick = context.date }
+                    .onChange(of: context.date) { _, newDate in
+                        let dt = lastTick.map { newDate.timeIntervalSince($0) } ?? 0
+                        lastTick = newDate
+                        advance(by: dt)
+                    }
             }
+        }
+        .onChange(of: isSpinning) { _, spinning in
+            // 切换瞬间重置时间基准，避免 dt 计算跳变
+            lastTick = nil
+        }
+    }
+
+    /// 每帧推进：speedFactor 平滑逼近目标值，currentDuration 平滑逼近目标时长，再按两者旋转
+    private func advance(by dt: Double) {
+        // 1. 缓启/缓停系数
+        let target: Double = isSpinning ? 1 : 0
+        if speedFactor < target {
+            speedFactor = min(speedFactor + rampRate * dt, target)
+        } else if speedFactor > target {
+            speedFactor = max(speedFactor - rampRate * dt, target)
+        }
+        // 2. 调速平滑过渡：currentDuration 向 targetDuration 逼近（指数衰减）
+        if currentDuration != targetDuration {
+            let diff = targetDuration - currentDuration
+            currentDuration += diff * durationRamp * dt
+            // 足够接近时直接落到目标，避免无限逼近
+            if abs(currentDuration - targetDuration) < 0.01 {
+                currentDuration = targetDuration
+            }
+        }
+        // 3. 推进角度：每转一圈 360°，按 currentDuration 与 speedFactor 换算
+        if speedFactor > 0 {
+            angle = (angle + dt / currentDuration * 360 * speedFactor).truncatingRemainder(dividingBy: 360)
         }
     }
 
