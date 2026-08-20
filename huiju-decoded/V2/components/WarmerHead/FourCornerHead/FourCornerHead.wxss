@@ -1,0 +1,127 @@
+.fourcorner-head {
+    -webkit-align-items: center;
+    align-items: center;
+    box-sizing: border-box;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    padding: 24rpx 0 16rpx;
+    width: 100%
+}
+
+.board {
+    background: transparent;
+    border-radius: 28rpx;
+    overflow: hidden;
+    position: relative
+}
+
+.board,.board-svg {
+    height: 330rpx;
+    width: 690rpx
+}
+
+.board-svg {
+    left: 0;
+    top: 0;
+    z-index: 1
+}
+
+.board-svg,.hit {
+    position: absolute
+}
+
+.hit {
+    height: 165rpx;
+    width: 345rpx;
+    z-index: 5
+}
+
+.hit-lt {
+    left: 0;
+    top: 0
+}
+
+.hit-rt {
+    right: 0;
+    top: 0
+}
+
+.hit-lb {
+    bottom: 0;
+    left: 0
+}
+
+.hit-rb {
+    bottom: 0;
+    right: 0
+}
+
+.center-switch {
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-justify-content: center;
+    justify-content: center;
+    z-index: 10
+}
+
+.center-switch,.power-ring {
+    height: 120rpx;
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    -webkit-transform: translate(-50%,-50%);
+    transform: translate(-50%,-50%);
+    width: 120rpx
+}
+
+.power-ring {
+    z-index: 11
+}
+
+.power-icon {
+    height: 44rpx;
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    -webkit-transform: translate(-50%,-50%);
+    transform: translate(-50%,-50%);
+    width: 44rpx;
+    z-index: 12
+}
+
+.quick-btns {
+    gap: 32rpx;
+    margin-top: 24rpx
+}
+
+.quick-btn,.quick-btns {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-justify-content: center;
+    justify-content: center
+}
+
+.quick-btn {
+    -webkit-align-items: center;
+    align-items: center;
+    background: hsla(0,0%,100%,.6);
+    border: 2rpx solid #fc753b;
+    border-radius: 36rpx;
+    box-sizing: border-box;
+    font-size: 28rpx;
+    height: 72rpx;
+    min-width: 180rpx;
+    padding: 0 32rpx;
+    transition: background .1s ease,opacity .1s ease,-webkit-transform .1s ease;
+    transition: transform .1s ease,background .1s ease,opacity .1s ease;
+    transition: transform .1s ease,background .1s ease,opacity .1s ease,-webkit-transform .1s ease
+}
+
+.quick-btn-hover {
+    background: rgba(252,117,59,.18);
+    opacity: .85
+}

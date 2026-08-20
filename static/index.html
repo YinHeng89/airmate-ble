@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIRMATE 风扇控制</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="title">AIRMATE 风扇</div>
+    <div class="status-dot">
+      <span class="dot" id="connDot"></span>
+      <span id="connText">连接中...</span>
+    </div>
+  </div>
+
+  <div class="power-area">
+    <div class="fan-wrap style-a" id="fanWrap">
+      <div class="fan-ring"></div>
+      <div class="fan-blades" id="fanBlades">
+        <!-- 通用底盘（正/斜叶共用，保证两种样式一致） -->
+        <svg class="fan-disc-svg" viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg">
+          <circle class="fan-disc-outer" cx="160" cy="160" r="150"/>
+          <circle class="fan-disc-inner" cx="160" cy="160" r="138"/>
+          <circle class="fan-disc-hub" cx="160" cy="160" r="34"/>
+          <circle class="fan-disc-center" cx="160" cy="160" r="10"/>
+        </svg>
+        <!-- 样式A：与斜叶完全一致的五叶形（viewBox 1024，内部自带旋转，整体缩小0.92） -->
+        <div class="blade blade-straight"><svg viewBox="0 0 1024 1024"><defs><linearGradient id="bldGradA" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#AAB3C0"/><stop offset="100%" stop-color="#919BA8"/></linearGradient></defs><g transform="translate(512 512)"><g transform="rotate(-90) scale(0.92)"><path class="blade-fill-a" d="M20 0 C55 -20,110 -105,145 -225 C175 -330,175 -410,135 -430 C95 -450,40 -390,0 -305 C-45 -210,-45 -110,0 -20 C5 -10,12 -4,20 0 Z"/><path class="blade-highlight-a" d="M8 -18 C-15 -105,-8 -190,28 -280 C55 -350,90 -395,125 -420"/></g></g></svg></div>
+        <div class="blade blade-straight"><svg viewBox="0 0 1024 1024"><defs><linearGradient id="bldGradA" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#AAB3C0"/><stop offset="100%" stop-color="#919BA8"/></linearGradient></defs><g transform="translate(512 512)"><g transform="rotate(-18) scale(0.92)"><path class="blade-fill-a" d="M20 0 C55 -20,110 -105,145 -225 C175 -330,175 -410,135 -430 C95 -450,40 -390,0 -305 C-45 -210,-45 -110,0 -20 C5 -10,12 -4,20 0 Z"/><path class="blade-highlight-a" d="M8 -18 C-15 -105,-8 -190,28 -280 C55 -350,90 -395,125 -420"/></g></g></svg></div>
+        <div class="blade blade-straight"><svg viewBox="0 0 1024 1024"><defs><linearGradient id="bldGradA" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#AAB3C0"/><stop offset="100%" stop-color="#919BA8"/></linearGradient></defs><g transform="translate(512 512)"><g transform="rotate(54) scale(0.92)"><path class="blade-fill-a" d="M20 0 C55 -20,110 -105,145 -225 C175 -330,175 -410,135 -430 C95 -450,40 -390,0 -305 C-45 -210,-45 -110,0 -20 C5 -10,12 -4,20 0 Z"/><path class="blade-highlight-a" d="M8 -18 C-15 -105,-8 -190,28 -280 C55 -350,90 -395,125 -420"/></g></g></svg></div>
+        <div class="blade blade-straight"><svg viewBox="0 0 1024 1024"><defs><linearGradient id="bldGradA" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#AAB3C0"/><stop offset="100%" stop-color="#919BA8"/></linearGradient></defs><g transform="translate(512 512)"><g transform="rotate(126) scale(0.92)"><path class="blade-fill-a" d="M20 0 C55 -20,110 -105,145 -225 C175 -330,175 -410,135 -430 C95 -450,40 -390,0 -305 C-45 -210,-45 -110,0 -20 C5 -10,12 -4,20 0 Z"/><path class="blade-highlight-a" d="M8 -18 C-15 -105,-8 -190,28 -280 C55 -350,90 -395,125 -420"/></g></g></svg></div>
+        <div class="blade blade-straight"><svg viewBox="0 0 1024 1024"><defs><linearGradient id="bldGradA" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#AAB3C0"/><stop offset="100%" stop-color="#919BA8"/></linearGradient></defs><g transform="translate(512 512)"><g transform="rotate(198) scale(0.92)"><path class="blade-fill-a" d="M20 0 C55 -20,110 -105,145 -225 C175 -330,175 -410,135 -430 C95 -450,40 -390,0 -305 C-45 -210,-45 -110,0 -20 C5 -10,12 -4,20 0 Z"/><path class="blade-highlight-a" d="M8 -18 C-15 -105,-8 -190,28 -280 C55 -350,90 -395,125 -420"/></g></g></svg></div>
+        <!-- 样式B：斜扇叶形（用户提供的原始SVG代码，viewBox 1024，内部自带旋转，整体缩小0.82） -->
+        <div class="blade blade-slanted"><svg viewBox="0 0 1024 1024"><defs><linearGradient id="bldGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#AAB3C0"/><stop offset="100%" stop-color="#919BA8"/></linearGradient></defs><g transform="translate(512 512)"><g transform="rotate(-90) scale(0.92)"><path class="blade-fill" d="M20 0 C55 -20,110 -105,145 -225 C175 -330,175 -410,135 -430 C95 -450,40 -390,0 -305 C-45 -210,-45 -110,0 -20 C5 -10,12 -4,20 0 Z"/><path class="blade-highlight" d="M8 -18 C-15 -105,-8 -190,28 -280 C55 -350,90 -395,125 -420"/></g></g></svg></div>
+        <div class="blade blade-slanted"><svg viewBox="0 0 1024 1024"><defs><linearGradient id="bldGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#AAB3C0"/><stop offset="100%" stop-color="#919BA8"/></linearGradient></defs><g transform="translate(512 512)"><g transform="rotate(-18) scale(0.92)"><path class="blade-fill" d="M20 0 C55 -20,110 -105,145 -225 C175 -330,175 -410,135 -430 C95 -450,40 -390,0 -305 C-45 -210,-45 -110,0 -20 C5 -10,12 -4,20 0 Z"/><path class="blade-highlight" d="M8 -18 C-15 -105,-8 -190,28 -280 C55 -350,90 -395,125 -420"/></g></g></svg></div>
+        <div class="blade blade-slanted"><svg viewBox="0 0 1024 1024"><defs><linearGradient id="bldGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#AAB3C0"/><stop offset="100%" stop-color="#919BA8"/></linearGradient></defs><g transform="translate(512 512)"><g transform="rotate(54) scale(0.92)"><path class="blade-fill" d="M20 0 C55 -20,110 -105,145 -225 C175 -330,175 -410,135 -430 C95 -450,40 -390,0 -305 C-45 -210,-45 -110,0 -20 C5 -10,12 -4,20 0 Z"/><path class="blade-highlight" d="M8 -18 C-15 -105,-8 -190,28 -280 C55 -350,90 -395,125 -420"/></g></g></svg></div>
+        <div class="blade blade-slanted"><svg viewBox="0 0 1024 1024"><defs><linearGradient id="bldGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#AAB3C0"/><stop offset="100%" stop-color="#919BA8"/></linearGradient></defs><g transform="translate(512 512)"><g transform="rotate(126) scale(0.92)"><path class="blade-fill" d="M20 0 C55 -20,110 -105,145 -225 C175 -330,175 -410,135 -430 C95 -450,40 -390,0 -305 C-45 -210,-45 -110,0 -20 C5 -10,12 -4,20 0 Z"/><path class="blade-highlight" d="M8 -18 C-15 -105,-8 -190,28 -280 C55 -350,90 -395,125 -420"/></g></g></svg></div>
+        <div class="blade blade-slanted"><svg viewBox="0 0 1024 1024"><defs><linearGradient id="bldGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#AAB3C0"/><stop offset="100%" stop-color="#919BA8"/></linearGradient></defs><g transform="translate(512 512)"><g transform="rotate(198) scale(0.92)"><path class="blade-fill" d="M20 0 C55 -20,110 -105,145 -225 C175 -330,175 -410,135 -430 C95 -450,40 -390,0 -305 C-45 -210,-45 -110,0 -20 C5 -10,12 -4,20 0 Z"/><path class="blade-highlight" d="M8 -18 C-15 -105,-8 -190,28 -280 C55 -350,90 -395,125 -420"/></g></g></svg></div>
+      </div>
+      <div class="fan-hub"><div class="hub-icon"></div></div>
+      <div class="fan-status" id="fanStatus">已关机</div>
+    </div>
+    <div class="fan-style-toggle">
+      <button class="style-btn active" data-style="a">端正</button>
+      <button class="style-btn" data-style="b">斜叶</button>
+    </div>
+    </div>
+
+    <!-- 错误/提示浮条：固定定位，不占文档流，避免布局抖动 -->
+    <div class="power-hint" id="powerHint"></div>
+
+  <div class="card">
+    <div class="card-title">风速</div>
+    <div class="gear-slider" id="gearSlider">
+      <div class="gear-inner">
+        <div class="gear-track"></div>
+        <div class="gear-dots" id="gearDots"></div>
+        <div class="gear-thumb" id="gearThumb"><span class="gear-val" id="speedVal">1</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">风模式</div>
+    <div class="mode-grid" id="modeGrid">
+      <button class="mode-btn" data-mode="normal">标准风</button>
+      <button class="mode-btn" data-mode="nature">自然风</button>
+      <button class="mode-btn" data-mode="sleep">睡眠风</button>
+      <button class="mode-btn" data-mode="storm">暴风</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">开关</div>
+    <div class="switch-row">
+      <span class="switch-label">左右摆头</span>
+      <label class="switch"><input type="checkbox" id="swing"><span class="slider"></span></label>
+    </div>
+    <div class="switch-row">
+      <span class="switch-label">语音</span>
+      <label class="switch"><input type="checkbox" id="voice"><span class="slider"></span></label>
+    </div>
+    <div class="switch-row">
+      <span class="switch-label">屏显</span>
+      <label class="switch"><input type="checkbox" id="display"><span class="slider"></span></label>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">定时</div>
+    <div class="timer-row">
+      <select class="timer-select" id="timerSelect"></select>
+      <button class="timer-btn" id="timerBtn">设置</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">原始数据</div>
+    <div class="raw" id="rawText"></div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

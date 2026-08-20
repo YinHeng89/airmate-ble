@@ -1,0 +1,57 @@
+{
+  "entryPagePath": "pages/login/login",
+  "pages": [
+    "pages/login/login",
+    "pages/xinlianke/fourWaySwitch/fourWaySwitch",
+    "V2/pages/preview/preview",
+    "pages/fan/fan",
+    "pages/warmer/warmer",
+    "pages/OTA/OTA",
+    "pages/teaBar/teaBar",
+    "pages/deviceList/deviceList",
+    "pages/light/light",
+    "pages/search/search",
+    "pages/bofei/warmer/warmer",
+    "pages/bofei/fan/fan",
+    "pages/fengyun/warmer/warmer",
+    "pages/zhihengtong/fan/fan",
+    "pages/ruide/fan/fan",
+    "pages/xinlian/fan/fan",
+    "pages/jiangxin/warmer/warmer",
+    "V2/pages/deviceDetail/deviceDetail",
+    "pages/xinlianke/fan/fan",
+    "pages/otaTest/otaTest",
+    "pages/editCommand/EditCommand",
+    "pages/editCommandWithVoice/ecwv",
+    "V2/pages/setting/setting",
+    "V2/pages/allCommandWords/allCommandWords",
+    "pages/bofei/warmer25/warmer25",
+    "pages/xinlianke/toilet/toilet",
+    "pages/xinlianke/yuba/yuba",
+    "pages/xinlianke/threeWaySwitch/threeWaySwitch",
+    "pages/chenglixin/fan/fan",
+    "V2/pages/customize/julianxin/ruihe/shuinuantan",
+    "pages/yadixin/fan/fan",
+    "pages/zhihengtong/fanV2/fan",
+    "pages/juhu/fan/fan",
+    "pages/editScene/editScene",
+    "V2/pages/ruide/warmer"
+  ],
+  "permission": {
+    "scope.userLocation": {
+      "desc": "你的位置信息将用于发现蓝牙设备"
+    }
+  },
+  "style": "v2",
+  "renderer": "webview",
+  "requiredPrivateInfos": [
+    "getLocation"
+  ],
+  "componentFramework": "glass-easel",
+  "window": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "Weixin",
+    "navigationBarBackgroundColor": "#ffffff"
+  },
+  "plugins": {}
+}

@@ -1,0 +1,19 @@
+.switch-item-wrapper {
+    -webkit-align-items: center;
+    align-items: center;
+    background: #fff;
+    border-radius: 20rpx;
+    box-shadow: var(--box-shadow-sm);
+    box-sizing: border-box;
+    display: -webkit-flex;
+    display: flex;
+    height: 112rpx;
+    -webkit-justify-content: space-between;
+    justify-content: space-between;
+    padding: 0 32rpx
+}
+
+.switch-label {
+    color: #282c37;
+    font-size: 32rpx
+}

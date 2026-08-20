@@ -1,0 +1,36 @@
+.container {
+    -webkit-align-items: center;
+    align-items: center;
+    box-sizing: border-box;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    height: 100%;
+    -webkit-justify-content: space-between;
+    justify-content: space-between;
+    padding: 200rpx 0
+}
+
+page {
+    --primary-color: #3b89fc;
+    --warning-color: #ee0a24;
+    --primary-color-s: #90cffd;
+    --text-color: #818182;
+    --background-color: #f4f6f8;
+    --item-background-color: #fafcfe;
+    --primary-border-radius: 8rpx;
+    --font-size-sm: 24rpx;
+    --font-size-md: 28rpx;
+    --font-size-lg: 32rpx;
+    --font-size-xl: 64rpx;
+    --font-size-2xl: 96rpx;
+    --device-image-color: #8c8c8c;
+    --divide-color: #ebedf0;
+    --text-slate-600: #475569;
+    --box-shadow: 0 2rpx 6rpx 0 rgba(0,0,0,.1),0 2rpx 4rpx -2rpx rgba(0,0,0,.1);
+    --box-shadow-sm: 0 2rpx 4rpx 0 rgba(0,0,0,.05);
+    --item-background-color: #fbfcfd;
+    --item-border-radius: 20rpx;
+    --item-box-shadow: 0rpx 24rpx 48rpx 0rpx rgba(0,0,0,.06)
+}

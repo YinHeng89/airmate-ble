@@ -1,0 +1,99 @@
+.search-wrapper {
+    min-height: 100vh;
+    width: 100%
+}
+
+.search-header {
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    height: 760rpx;
+    -webkit-justify-content: center;
+    justify-content: center;
+    width: 100%
+}
+
+.search-text {
+    color: #8e8e92;
+    font-size: 28rpx;
+    margin-top: 32rpx
+}
+
+.search-content {
+    padding: 0 32rpx
+}
+
+.search-image {
+    height: 560rpx;
+    width: 560rpx
+}
+
+.device-wrapper {
+    color: #282c37;
+    font-size: 32rpx;
+    text-align: center
+}
+
+.ripple-container {
+    height: 600rpx;
+    position: relative;
+    width: 600rpx
+}
+
+.ripple {
+    -webkit-animation: ripple-animation 3s infinite;
+    animation: ripple-animation 3s infinite;
+    background-color: #3882ff;
+    border-radius: 50%;
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    -webkit-transform: translate(-50%,-50%);
+    transform: translate(-50%,-50%)
+}
+
+.ripple:nth-child(1) {
+    -webkit-animation-delay: 0s;
+    animation-delay: 0s
+}
+
+.ripple:nth-child(2) {
+    -webkit-animation-delay: 1s;
+    animation-delay: 1s
+}
+
+.ripple:nth-child(3) {
+    -webkit-animation-delay: 2s;
+    animation-delay: 2s
+}
+
+@-webkit-keyframes ripple-animation {
+    0% {
+        height: 20px;
+        opacity: 1;
+        width: 20px
+    }
+
+    100% {
+        height: 300px;
+        opacity: .2;
+        width: 300px
+    }
+}
+
+@keyframes ripple-animation {
+    0% {
+        height: 20px;
+        opacity: 1;
+        width: 20px
+    }
+
+    100% {
+        height: 300px;
+        opacity: .2;
+        width: 300px
+    }
+}

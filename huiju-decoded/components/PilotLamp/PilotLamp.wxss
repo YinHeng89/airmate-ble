@@ -1,0 +1,36 @@
+.pilot-wrap {
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: row;
+    flex-direction: row;
+    gap: 4px;
+    -webkit-justify-content: center;
+    justify-content: center
+}
+
+.badge {
+    border-radius: 9999px;
+    height: 12rpx;
+    width: 12rpx
+}
+
+.noConnected {
+    background-color: grey
+}
+
+.connected {
+    background-color: #52c41a
+}
+
+.status-text {
+    -webkit-align-items: center;
+    align-items: center;
+    color: #787b8d;
+    display: -webkit-flex;
+    display: flex;
+    font-size: 12px;
+    -webkit-justify-content: center;
+    justify-content: center
+}

@@ -1,0 +1,150 @@
+.ota-wrapper {
+    background-color: #f4f7fb;
+    box-sizing: border-box;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    height: 100vh;
+    padding: 30rpx 30rpx 80rpx
+}
+
+.head-wrapper,.ota-wrapper {
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-flex;
+    display: flex;
+    width: 100%
+}
+
+.head-wrapper {
+    font-size: 14px
+}
+
+.devices-list-wrapper {
+    background-color: #fff;
+    width: 100%
+}
+
+.file-content {
+    background: #fff;
+    border-radius: 16rpx;
+    box-shadow: var(--box-shadow);
+    box-sizing: border-box;
+    height: 600rpx;
+    margin-top: 32rpx;
+    padding: 30rpx;
+    width: 100%
+}
+
+.file-con-head {
+    -webkit-justify-content: space-between;
+    justify-content: space-between
+}
+
+.file-con-head,.ota-footer {
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-flex;
+    display: flex
+}
+
+.ota-footer {
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    gap: 24rpx;
+    margin-top: 32rpx
+}
+
+.connected {
+    color: var(--primary-color)
+}
+
+.noConnected {
+    color: var(--warning-color)
+}
+
+.item-text {
+    font-size: 32rpx
+}
+
+.cus-tag {
+    -webkit-justify-content: center;
+    justify-content: center
+}
+
+.cus-tag,.radio-view {
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-flex;
+    display: flex
+}
+
+.radio-view {
+    -webkit-flex-wrap: wrap;
+    flex-wrap: wrap;
+    gap: 32rpx;
+    margin-top: 16rpx
+}
+
+.group-view {
+    margin-bottom: 32rpx
+}
+
+.radio-wrapper {
+    margin-top: 20rpx
+}
+
+.radio-item {
+    margin-bottom: 16rpx
+}
+
+.noConnected-wrapper {
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-flex;
+    display: flex;
+    gap: 32rpx
+}
+
+.dialog-wrap {
+    padding: 20px
+}
+
+.box {
+    gap: 32rpx
+}
+
+.box,.box-1 {
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-flex;
+    display: flex;
+    height: 100%
+}
+
+.box-1 {
+    background-color: #fff;
+    border-radius: 2px;
+    box-shadow: var(--box-shadow);
+    padding: 8rpx
+}
+
+.text-1 {
+    color: var(--text-color);
+    font-size: 22rpx;
+    text-align: center
+}
+
+.dot {
+    position: relative
+}
+
+.dot::after {
+    background: #ee0a24;
+    border-radius: 9999px;
+    content: "";
+    height: 8rpx;
+    position: absolute;
+    right: -2rpx;
+    top: -2rpx;
+    width: 8rpx
+}

@@ -1,0 +1,84 @@
+.bg-box {
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    margin: 60rpx auto;
+    width: 100%
+}
+
+.bg-box,.bg-box-1 {
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-justify-content: center;
+    justify-content: center
+}
+
+.bg-box-1 {
+    border-radius: 9999px;
+    height: 312rpx;
+    width: 312rpx
+}
+
+.bg-box-1.active {
+    background: #fff7ec
+}
+
+.bg-box-1.off {
+    background: #f4f6f8
+}
+
+.fire {
+    margin: 0 auto;
+    width: 750rpx
+}
+
+.tem-wrap {
+    display: -webkit-flex;
+    display: flex;
+    gap: 64rpx;
+    -webkit-justify-content: center;
+    justify-content: center;
+    margin-bottom: 32rpx;
+    padding-right: 24rpx
+}
+
+.text1 {
+    color: rgba(0,0,0,.6)
+}
+
+.text1,.text2 {
+    font-size: 28rpx
+}
+
+.text1,.text2,.text3 {
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-flex;
+    display: flex
+}
+
+.text3 {
+    font-size: 48rpx;
+    font-weight: 800;
+    position: relative
+}
+
+.text3::after {
+    color: #666;
+    content: "℃";
+    display: inline;
+    font-size: 24rpx;
+    height: 24rpx;
+    position: absolute;
+    right: -24rpx;
+    top: 0;
+    width: 24rpx
+}
+
+.head-title {
+    color: rgba(0,0,0,.6);
+    font-size: 24rpx;
+    margin-top: 16rpx;
+    text-align: center
+}

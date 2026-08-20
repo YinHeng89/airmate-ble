@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>btn2</title>
+    <defs>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-1">
+            <stop stop-color="#FFFFFF" offset="0%"></stop>
+            <stop stop-color="#DADFE4" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-2">
+            <stop stop-color="#F2F7FF" offset="0%"></stop>
+            <stop stop-color="#CDD2D7" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="茶吧机" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="风扇切图" transform="translate(-369.000000, -115.000000)" fill="url(#linearGradient-1)" stroke="url(#linearGradient-2)" stroke-width="2">
+            <rect id="btn2" x="370" y="116" width="38" height="38" rx="8"></rect>
+        </g>
+    </g>
+</svg>

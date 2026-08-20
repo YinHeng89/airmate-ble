@@ -1,0 +1,19 @@
+.des {
+    color: #69696c;
+    font-size: 26rpx;
+    font-weight: 400
+}
+
+.head-wrap {
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: column;
+    flex-direction: column
+}
+
+.img {
+    height: 300rpx;
+    z-index: 11
+}

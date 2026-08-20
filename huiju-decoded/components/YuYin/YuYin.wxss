@@ -1,0 +1,36 @@
+.row {
+    -webkit-align-items: center;
+    align-items: center;
+    background: #fff;
+    border-radius: 20rpx;
+    box-shadow: var(--box-shadow-sm);
+    box-sizing: border-box;
+    display: -webkit-flex;
+    display: flex;
+    height: 112rpx;
+    -webkit-justify-content: space-between;
+    justify-content: space-between;
+    padding: 0 32rpx
+}
+
+.label {
+    color: #282c37;
+    font-size: 32rpx
+}
+
+.img-wrap {
+    -webkit-align-items: center;
+    align-items: center;
+    background: #c8c6c6;
+    border-radius: 10rpx;
+    display: -webkit-flex;
+    display: flex;
+    height: 60%;
+    -webkit-justify-content: center;
+    justify-content: center;
+    width: 160rpx
+}
+
+.icon {
+    height: 64rpx
+}

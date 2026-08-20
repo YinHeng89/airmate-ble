@@ -1,0 +1,80 @@
+.head-wrap {
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-flex;
+    display: flex;
+    height: 600rpx;
+    -webkit-justify-content: center;
+    justify-content: center;
+    margin: 0 auto;
+    width: 600rpx
+}
+
+.fan-con {
+    height: 520rpx;
+    position: relative;
+    width: 520rpx
+}
+
+.img-fan {
+    height: 100%;
+    width: 100%
+}
+
+.img-fan-1 {
+    height: 500rpx;
+    width: 500rpx
+}
+
+.icon-switch,.img-fan-1 {
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    -webkit-transform: translate(-50%,-50%);
+    transform: translate(-50%,-50%)
+}
+
+.icon-switch {
+    height: 52rpx;
+    width: 52rpx;
+    z-index: 12
+}
+
+.icon-switch-1 {
+    height: 92rpx;
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    -webkit-transform: translate(-50%,-50%);
+    transform: translate(-50%,-50%);
+    width: 92rpx;
+    z-index: 11
+}
+
+.img-fan-1.active1 {
+    transition: all .2s
+}
+
+@-webkit-keyframes rotateAnimation1 {
+    0% {
+        -webkit-transform: translate(-50%,-50%) rotate(0deg);
+        transform: translate(-50%,-50%) rotate(0deg)
+    }
+
+    100% {
+        -webkit-transform: translate(-50%,-50%) rotate(1turn);
+        transform: translate(-50%,-50%) rotate(1turn)
+    }
+}
+
+@keyframes rotateAnimation1 {
+    0% {
+        -webkit-transform: translate(-50%,-50%) rotate(0deg);
+        transform: translate(-50%,-50%) rotate(0deg)
+    }
+
+    100% {
+        -webkit-transform: translate(-50%,-50%) rotate(1turn);
+        transform: translate(-50%,-50%) rotate(1turn)
+    }
+}

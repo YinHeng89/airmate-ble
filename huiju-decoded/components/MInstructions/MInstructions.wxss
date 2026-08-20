@@ -1,0 +1,38 @@
+.command-wrap {
+    -webkit-align-items: center;
+    align-items: center;
+    background: #e1e4ed;
+    border-radius: 8px 8px 8px 0;
+    box-sizing: border-box;
+    color: #787b8d;
+    font-size: 12px;
+    height: 30px;
+    padding: 4px 8px;
+    z-index: 51
+}
+
+.command-wrap,.pop-wrap {
+    display: -webkit-flex;
+    display: flex
+}
+
+.pop-wrap {
+    height: 100%
+}
+
+.head-wrap {
+    -webkit-align-items: center;
+    align-items: center;
+    color: #1e293b;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-justify-content: center;
+    justify-content: center;
+    padding: 32rpx 0 0
+}
+
+.con-wrap {
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto
+}

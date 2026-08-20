@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="260px" height="260px" viewBox="0 0 260 260" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>leaf1_1_s</title>
+    <defs>
+        <radialGradient cx="39.4493379%" cy="50%" fx="39.4493379%" fy="50%" r="60.5631625%" gradientTransform="translate(0.394493,0.500000),scale(1.000000,0.896681),rotate(58.545795),translate(-0.394493,-0.500000)" id="radialGradient-1">
+            <stop stop-color="#E0E0E0" offset="0%"></stop>
+            <stop stop-color="#BCB6CB" offset="100%"></stop>
+        </radialGradient>
+        <circle id="path-2" cx="64.8771282" cy="92.4557972" r="17"></circle>
+        <filter x="-70.6%" y="-70.6%" width="241.2%" height="241.2%" filterUnits="objectBoundingBox" id="filter-3">
+            <feOffset dx="0" dy="0" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="8" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.2 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+    </defs>
+    <g id="茶吧机" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="风扇切图" transform="translate(-860.000000, -69.000000)">
+            <g id="leaf1_1_s" transform="translate(860.000000, 69.000000)">
+                <rect id="矩形" x="0" y="0" width="260" height="260"></rect>
+                <g id="编组-3" transform="translate(65.122872, 37.544203)">
+                    <path d="M56.0939359,92.8271844 L70.2875375,102.044845 C69.0436694,119.969656 65.3101442,136.720657 59.0869619,152.297848 C49.7521886,175.663634 42.0232147,185.598894 32.4511333,185.905549 C22.8790519,186.212204 7.6062057,178.389188 2.1487968,168.936678 C-3.30861211,159.484169 1.36994666,147.346272 19.1671319,126.197521 C31.0319221,112.098353 43.3408568,100.974908 56.0939359,92.8271844 Z M32.4604565,0 C43.3752743,0 51.5477215,10.1206989 60.9644848,36.1078892 C67.0554995,52.9170999 70.5115149,68.6877762 71.3325309,83.4199181 L71.384,84.421 L72.079125,84.0854865 C87.8676034,76.5013596 103.874102,71.5369786 120.098622,69.1923435 C145.001374,65.5936012 157.470048,67.319459 162.521659,75.4557972 C167.573271,83.5921353 168.434763,100.730316 162.977354,110.182826 C157.519946,119.635335 144.66894,121.652533 117.454991,116.814094 C99.3123586,113.588468 83.5247048,108.490341 70.0920297,101.519712 L70.957,84.998 L56.3211132,92.4557972 C41.4197053,82.4161701 28.7796754,70.8073419 18.4010235,57.6293125 C2.83304557,37.8622684 -1.90665475,26.2011509 2.61381492,17.7581577 C7.13428458,9.31516457 21.5456386,0 32.4604565,0 Z" id="形状结合" fill="url(#radialGradient-1)"></path>
+                    <g id="椭圆形">
+                        <use fill="black" fill-opacity="1" filter="url(#filter-3)" xlink:href="#path-2"></use>
+                        <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-2"></use>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

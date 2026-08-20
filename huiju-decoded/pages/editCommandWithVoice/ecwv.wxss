@@ -1,0 +1,92 @@
+.edit-command-wrap {
+    box-sizing: border-box;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    gap: 24px;
+    height: 100vh;
+    padding: 20px 12px;
+    width: 100%
+}
+
+.row {
+    -webkit-justify-content: space-between;
+    justify-content: space-between;
+    margin-top: 8px
+}
+
+.r-c,.row {
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-flex;
+    display: flex
+}
+
+.r-c {
+    gap: 4px
+}
+
+.btn {
+    width: 100px
+}
+
+.label {
+    font-weight: 600
+}
+
+.label,.text {
+    font-size: 14px
+}
+
+.text-1,.text-2 {
+    -webkit-flex-direction: row;
+    flex-direction: row;
+    gap: 4px
+}
+
+.text-1,.text-2,.text-wrap {
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-flex;
+    display: flex;
+    font-size: 14px
+}
+
+.text-wrap {
+    background-color: #eee;
+    -webkit-justify-content: center;
+    justify-content: center;
+    padding: 4px
+}
+
+.active-pro {
+    background-color: #3b89fc;
+    color: #fff
+}
+
+.input-wrapper {
+    padding: 20px
+}
+
+.weui-input {
+    border: 1rpx solid #d8d8d8;
+    height: 32px;
+    padding-left: 8px
+}
+
+.pro-set {
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    margin-top: 8px
+}
+
+.pro-set,.spell-wrap {
+    display: -webkit-flex;
+    display: flex;
+    gap: 4px
+}
+
+.spell-wrap {
+    font-size: 14px
+}

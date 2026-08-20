@@ -1,0 +1,30 @@
+.set-wrap {
+    -webkit-flex-direction: column;
+    flex-direction: column
+}
+
+.set-wrap,.v-wraper {
+    display: -webkit-flex;
+    display: flex
+}
+
+.v-wraper {
+    -webkit-align-items: center;
+    align-items: center;
+    border-bottom: 1rpx solid #ebebeb;
+    box-sizing: border-box;
+    -webkit-justify-content: space-between;
+    justify-content: space-between;
+    padding: 28rpx 32rpx;
+    width: 100%
+}
+
+.text {
+    color: #282c37;
+    font-family: PingFangSC,PingFang SC;
+    font-size: 32rpx;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 48rpx;
+    text-align: left
+}

@@ -1,0 +1,29 @@
+.slider-wrap {
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-flex;
+    display: flex;
+    gap: 16rpx;
+    -webkit-justify-content: space-between;
+    justify-content: space-between;
+    width: 100%
+}
+
+.cus-slider {
+    border-radius: 20rpx;
+    height: 80rpx
+}
+
+.slider-btn {
+    background: #ebebeb;
+    border: 4rpx solid #fff;
+    border-radius: 4rpx;
+    box-shadow: 0rpx 4rpx 8rpx 0rpx rgba(0,0,0,.2);
+    height: 88rpx;
+    width: 24rpx
+}
+
+.slider-img {
+    height: 48rpx;
+    width: 48rpx
+}

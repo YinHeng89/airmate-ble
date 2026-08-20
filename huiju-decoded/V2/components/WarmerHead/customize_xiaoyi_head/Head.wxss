@@ -1,0 +1,99 @@
+.bg-box {
+    -webkit-align-items: center;
+    align-items: center;
+    border-radius: 9999px;
+    display: -webkit-flex;
+    display: flex;
+    height: 416rpx;
+    -webkit-justify-content: center;
+    justify-content: center;
+    margin: 80rpx auto;
+    width: 416rpx
+}
+
+.bg-box.red {
+    background: radial-gradient(0 50% at 50% 50%,#fff 0,#ffc3a1 100%);
+    box-shadow: 0rpx 0rpx 100rpx 50rpx rgba(255,195,161,.5)
+}
+
+.bg-box.blue {
+    background: radial-gradient(0 50% at 50% 50%,#fff 0,#c4daff 100%);
+    box-shadow: 0rpx 0rpx 100rpx 50rpx rgba(160,195,253,.5)
+}
+
+.bg-box.green {
+    background: radial-gradient(0 50% at 50% 50%,#fff 0,#c3eabb 100%);
+    box-shadow: 0rpx 0rpx 100rpx 50rpx rgba(175,225,165,.5)
+}
+
+.bg-box.off {
+    background: radial-gradient(0 50% at 50% 50%,#fff 0,#e1e5e8 100%)
+}
+
+.bg-box-1 {
+    -webkit-align-items: center;
+    align-items: center;
+    border-radius: 9999px;
+    display: -webkit-flex;
+    display: flex;
+    height: 312rpx;
+    -webkit-justify-content: center;
+    justify-content: center;
+    width: 312rpx
+}
+
+.bg-box-1.active {
+    background: #fff7ec
+}
+
+.bg-box-1.off {
+    background: #f4f6f8
+}
+
+.fire {
+    height: 160rpx;
+    width: 160rpx
+}
+
+.tem-wrap {
+    display: -webkit-flex;
+    display: flex;
+    gap: 64rpx;
+    -webkit-justify-content: center;
+    justify-content: center;
+    margin-bottom: 32rpx;
+    padding-right: 24rpx
+}
+
+.text1 {
+    color: rgba(0,0,0,.6)
+}
+
+.text1,.text2 {
+    font-size: 28rpx
+}
+
+.text1,.text2,.text3 {
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-flex;
+    display: flex
+}
+
+.text3 {
+    font-size: 48rpx;
+    font-weight: 800;
+    position: relative
+}
+
+.text3::after {
+    color: #666;
+    content: "℃";
+    display: inline;
+    font-size: 24rpx;
+    height: 24rpx;
+    position: absolute;
+    right: -24rpx;
+    top: 0;
+    width: 24rpx
+}

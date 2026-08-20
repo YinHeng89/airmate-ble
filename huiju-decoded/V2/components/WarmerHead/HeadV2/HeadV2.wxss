@@ -1,0 +1,122 @@
+.head-wrap {
+    height: 600rpx;
+    margin: 0 auto;
+    padding-bottom: 32rpx;
+    position: relative;
+    width: 600rpx
+}
+
+.canvas {
+    height: 100%;
+    width: 100%;
+    z-index: 2
+}
+
+.info-wrap {
+    height: 100%;
+    width: 100%
+}
+
+.info-wrap,.text-wrapper {
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    -webkit-transform: translate(-50%,-50%);
+    transform: translate(-50%,-50%)
+}
+
+.text-wrapper {
+    -webkit-align-items: center;
+    align-items: center;
+    background: linear-gradient(180deg,#e0e4ea,#fff);
+    border-radius: 9999px;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    height: 360rpx;
+    -webkit-justify-content: center;
+    justify-content: center;
+    width: 360rpx;
+    z-index: 4
+}
+
+.bg-img {
+    height: 100%;
+    width: 100%
+}
+
+.label {
+    font-size: 26rpx;
+    line-height: 40rpx
+}
+
+.label,.text2 {
+    color: #69696c;
+    font-style: normal;
+    font-weight: 400;
+    text-align: right
+}
+
+.text2 {
+    font-family: Roboto;
+    font-size: 96rpx;
+    line-height: 126rpx;
+    position: relative
+}
+
+.text2::after {
+    color: #999;
+    content: "℃";
+    display: inline;
+    font-size: 32rpx;
+    position: absolute;
+    right: -32rpx;
+    top: -20rpx
+}
+
+.fire-image {
+    height: 48rpx;
+    width: 48rpx
+}
+
+.tem-wrap {
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-flex;
+    display: flex;
+    gap: 64rpx;
+    -webkit-justify-content: center;
+    justify-content: center;
+    padding-right: 24rpx
+}
+
+.text1 {
+    color: rgba(0,0,0,.6)
+}
+
+.text1,.text21 {
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-flex;
+    display: flex;
+    font-size: 28rpx
+}
+
+.text3 {
+    font-size: 48rpx;
+    font-weight: 800;
+    position: relative
+}
+
+.text3::after {
+    color: #666;
+    content: "℃";
+    display: inline;
+    font-size: 24rpx;
+    height: 24rpx;
+    position: absolute;
+    right: -24rpx;
+    top: 0;
+    width: 24rpx
+}

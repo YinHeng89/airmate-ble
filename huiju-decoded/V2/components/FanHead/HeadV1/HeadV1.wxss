@@ -1,0 +1,70 @@
+.fan-box {
+    -webkit-align-items: center;
+    align-items: center;
+    box-sizing: border-box;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-justify-content: center;
+    justify-content: center;
+    margin-top: 28rpx;
+    position: relative;
+    width: 100%
+}
+
+.fan-img {
+    height: 530rpx;
+    width: 530rpx
+}
+
+.fan-img.active {
+    -webkit-animation: rotateAnimation 5s linear infinite;
+    animation: rotateAnimation 5s linear infinite
+}
+
+.fan-switch-box {
+    -webkit-align-items: center;
+    align-items: center;
+    background: #fff;
+    border-radius: 9999px;
+    display: -webkit-flex;
+    display: flex;
+    height: 152rpx;
+    -webkit-justify-content: center;
+    justify-content: center;
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    -webkit-transform: translate(-50%,-50%);
+    transform: translate(-50%,-50%);
+    width: 152rpx;
+    z-index: 11
+}
+
+.fan-switch {
+    height: 104rpx;
+    width: 104rpx
+}
+
+@-webkit-keyframes rotateAnimation {
+    0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg)
+    }
+
+    100% {
+        -webkit-transform: rotate(1turn);
+        transform: rotate(1turn)
+    }
+}
+
+@keyframes rotateAnimation {
+    0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg)
+    }
+
+    100% {
+        -webkit-transform: rotate(1turn);
+        transform: rotate(1turn)
+    }
+}

@@ -1,0 +1,1 @@
+{"component":true,"usingComponents":{"van-picker":"../../../miniprogram_npm/@vant/weapp/picker/index","van-button":"../../../miniprogram_npm/@vant/weapp/button/index","van-popup":"../../../miniprogram_npm/@vant/weapp/popup/index","van-cell":"../../../miniprogram_npm/@vant/weapp/cell/index"}}

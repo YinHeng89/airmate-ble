@@ -1,0 +1,34 @@
+.popup-wrap {
+    width: 100%
+}
+
+.row {
+    -webkit-align-items: center;
+    align-items: center;
+    background: #fff;
+    border-radius: 20rpx;
+    box-shadow: var(--box-shadow-sm);
+    box-sizing: border-box;
+    display: -webkit-flex;
+    display: flex;
+    height: 112rpx;
+    -webkit-justify-content: space-between;
+    justify-content: space-between;
+    padding: 0 32rpx
+}
+
+.label {
+    color: #282c37;
+    font-size: 32rpx
+}
+
+.icon {
+    height: 100%
+}
+
+.disabled {
+    background: #f8f9fa;
+    cursor: not-allowed;
+    opacity: .4;
+    pointer-events: none
+}

@@ -1,0 +1,243 @@
+.edit-command-wrap {
+    box-sizing: border-box;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    gap: 24px;
+    height: 100vh;
+    padding: 20px 12px;
+    width: 100%
+}
+
+.edit-command-wrap,.icon-view {
+    display: -webkit-flex;
+    display: flex
+}
+
+.icon-view {
+    -webkit-align-items: center;
+    align-items: center;
+    gap: 8rpx
+}
+
+.icon-title {
+    height: 48rpx
+}
+
+.icon-text {
+    color: #282c37;
+    font-size: 28rpx;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 44rpx;
+    text-align: left
+}
+
+.row {
+    background: #f7f9fc;
+    margin-top: 24rpx;
+    padding: 20rpx 32rpx
+}
+
+.row,.row-1 {
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-justify-content: space-between;
+    justify-content: space-between
+}
+
+.row-1 {
+    border-bottom: 2rpx solid #ebebeb;
+    box-sizing: border-box;
+    padding: 26rpx 32rpx
+}
+
+.label-wrap,.word-wrap {
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-justify-content: space-between;
+    justify-content: space-between;
+    width: 500rpx
+}
+
+.btn {
+    width: 100px
+}
+
+.label-1 {
+    width: 200rpx
+}
+
+.title-style {
+    color: #858585;
+    font-size: 26rpx;
+    font-weight: 400;
+    line-height: 40rpx;
+    text-align: left
+}
+
+.label-2 {
+    width: 200rpx
+}
+
+.text-style {
+    color: #282c37;
+    font-size: 28rpx;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 44rpx;
+    text-align: left
+}
+
+.t-1,.t-2 {
+    width: 200rpx
+}
+
+.text,.text-1 {
+    font-size: 14px
+}
+
+.text-1 {
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: row;
+    flex-direction: row;
+    gap: 12rpx
+}
+
+.tone-text {
+    color: #69696c;
+    font-size: 26rpx;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 40rpx;
+    text-align: right
+}
+
+.text-2 {
+    -webkit-flex-direction: row;
+    flex-direction: row;
+    font-size: 14px;
+    gap: 12rpx
+}
+
+.text-2,.text-wrap {
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-flex;
+    display: flex
+}
+
+.text-wrap {
+    color: #69696c;
+    font-size: 26rpx;
+    -webkit-justify-content: center;
+    justify-content: center;
+    padding: 8rpx
+}
+
+.btn-style {
+    background: rgba(56,130,255,.15);
+    color: #3882ff
+}
+
+.active-pro {
+    background: #4b82f7;
+    color: #fff
+}
+
+.input-wrapper {
+    padding: 20px
+}
+
+.weui-input {
+    border: 1rpx solid #d8d8d8;
+    height: 32px;
+    padding-left: 8px
+}
+
+.pro-set {
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    gap: 40rpx;
+    margin-top: 40rpx
+}
+
+.pro-set,.spell-wrap {
+    display: -webkit-flex;
+    display: flex
+}
+
+.spell-wrap {
+    font-size: 14px;
+    gap: 4px
+}
+
+.btn-text {
+    text-align: center;
+    width: 240rpx
+}
+
+.btn-wrap {
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-flex;
+    display: flex;
+    font-size: 14px;
+    gap: 16rpx;
+    -webkit-justify-content: center;
+    justify-content: center;
+    width: 240rpx
+}
+
+.btn-class {
+    background: rgba(56,130,255,.15);
+    color: #3882ff;
+    font-size: 12px;
+    font-size: 26rpx;
+    font-weight: 400;
+    margin: 0;
+    padding: 0;
+    width: 90rpx
+}
+
+.rule {
+    position: relative
+}
+
+.rule::after {
+    color: #ee0a24;
+    content: "必须全部是中文";
+    font-size: 20rpx;
+    position: absolute;
+    top: 64rpx
+}
+
+.rule1 {
+    position: relative
+}
+
+.rule1::after {
+    color: #ee0a24;
+    content: "唤醒词3-6个字符";
+    font-size: 20rpx;
+    position: absolute;
+    top: 64rpx
+}
+
+.rule2 {
+    position: relative
+}
+
+.rule2::after {
+    color: #ee0a24;
+    content: "命令词2-10个字符";
+    font-size: 20rpx;
+    position: absolute;
+    top: 64rpx
+}

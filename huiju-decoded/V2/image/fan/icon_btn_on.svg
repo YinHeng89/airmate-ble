@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="50px" height="50px" viewBox="0 0 50 50" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>btn_l_s</title>
+    <defs>
+        <linearGradient x1="50%" y1="6.03066926%" x2="50%" y2="95.592588%" id="linearGradient-1">
+            <stop stop-color="#1A74F0" offset="0%"></stop>
+            <stop stop-color="#6AA1FF" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-2">
+            <stop stop-color="#94BFFF" offset="0%"></stop>
+            <stop stop-color="#1A74F0" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="茶吧机" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="风扇切图" transform="translate(-126.000000, -199.000000)">
+            <g id="btn_l_s" transform="translate(126.000000, 199.000000)">
+                <rect id="矩形备份-3" x="0" y="0" width="50" height="50"></rect>
+                <circle id="椭圆形备份-2" stroke="url(#linearGradient-2)" stroke-width="2" fill="url(#linearGradient-1)" cx="25" cy="25" r="23"></circle>
+            </g>
+        </g>
+    </g>
+</svg>

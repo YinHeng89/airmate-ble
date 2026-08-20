@@ -1,0 +1,10 @@
+.loading-wrap {
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-flex;
+    display: flex;
+    height: 100vh;
+    -webkit-justify-content: center;
+    justify-content: center;
+    width: 100%
+}

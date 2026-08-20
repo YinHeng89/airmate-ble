@@ -1,0 +1,44 @@
+.head-wrapper {
+    box-sizing: border-box;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    height: 300rpx;
+    width: 100%
+}
+
+.head-1,.head-wrapper {
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-justify-content: center;
+    justify-content: center
+}
+
+.head-1 {
+    gap: 128rpx
+}
+
+.tem-text {
+    color: #282c37;
+    font-size: 104rpx;
+    position: relative
+}
+
+.tem-text::after {
+    color: #666;
+    content: "℃";
+    display: inline;
+    font-size: 32rpx;
+    height: 24rpx;
+    position: absolute;
+    right: -24rpx;
+    top: 24rpx;
+    width: 24rpx
+}
+
+.sw-i {
+    margin-top: 50rpx;
+    width: 176rpx;
+    z-index: 11
+}
