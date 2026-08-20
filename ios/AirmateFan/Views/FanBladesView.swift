@@ -141,8 +141,8 @@ struct FanBladesView: View {
         }
     }
 
-    // MARK: - 中心 hub（.fan-hub：44px 圆 + .hub-icon 16px 内芯）
-    // 注意：web 端底盘 svg 里已有 hub r34，此处 .fan-hub 是独立叠加的 44px 圆
+    // MARK: - 中心 hub（外层大圆 + 内芯）
+    // 外层大圆加大到 56/220，盖住叶片根部；内芯 16/220
     private func fanHub(size: CGFloat) -> some View {
         ZStack {
             Circle()
@@ -151,11 +151,11 @@ struct FanBladesView: View {
                                                      startPoint: .topLeading, endPoint: .bottomTrailing))
                       : AnyShapeStyle(Color.white))
                 .overlay(Circle().strokeBorder(power ? Color.clear : Color(hex: 0x1f2733).opacity(0.08), lineWidth: 1))
-                .frame(width: size * (44.0 / 220.0), height: size * (44.0 / 220.0))
+                .frame(width: size * (48.0 / 220.0), height: size * (48.0 / 220.0))
                 .shadow(color: power ? Color.airmatePrimary.opacity(0.35) : Color.black.opacity(0.05), radius: 6, y: 3)
             Circle()
                 .fill(power ? Color.white : Color(hex: 0xc8ccd4))
-                .frame(width: size * (16.0 / 220.0), height: size * (16.0 / 220.0))
+                .frame(width: size * (18.0 / 220.0), height: size * (18.0 / 220.0))
         }
     }
 
