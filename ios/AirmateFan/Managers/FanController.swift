@@ -23,6 +23,9 @@ final class FanController: ObservableObject {
     /// 是否已进入扫描/连接流程（取代原 isConfigured）
     @Published var hasStarted: Bool = false
 
+    /// 扫描是否超时（供 UI 显示「未找到设备」提示）
+    @Published var scanDidTimeout: Bool = false
+
     private var coolDownUntil = Date.distantPast
     private var pendingOps = 0
     private var latest: FanStatus?
@@ -54,12 +57,21 @@ final class FanController: ObservableObject {
                 self?.discovered = list
             }
             .store(in: &cancellables)
+
+        // 同步扫描超时状态
+        ble.$scanDidTimeout
+            .receive(on: RunLoop.main)
+            .sink { [weak self] timedOut in
+                self?.scanDidTimeout = timedOut
+            }
+            .store(in: &cancellables)
     }
 
     // MARK: - 扫描 / 连接
     func startScan() {
         hasStarted = true
         discovered = []
+        scanDidTimeout = false
         ble.startScan()
         observeBLEState()
     }

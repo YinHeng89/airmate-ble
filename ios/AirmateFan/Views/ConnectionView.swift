@@ -23,7 +23,11 @@ struct ConnectionView: View {
             }
         }
         .onChange(of: controller.connected) { _, connected in
-            if connected { dismiss?() }
+            if connected {
+                // 连接成功震动反馈
+                UINotificationFeedbackGenerator().notificationOccurred(.success)
+                dismiss?()
+            }
         }
     }
 
@@ -130,6 +134,23 @@ struct ConnectionView: View {
                     .font(.headline)
                 Text(msg).font(.footnote).foregroundStyle(.secondary).multilineTextAlignment(.center)
                 Button("重新扫描") { controller.startScan() }
+                    .padding(.top, 4)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        case .idle where controller.scanDidTimeout:
+            // 扫描超时且未找到设备
+            VStack(spacing: 12) {
+                Image(systemName: "fanblades")
+                    .font(.largeTitle)
+                    .foregroundStyle(.secondary)
+                Text("未找到设备")
+                    .font(.headline)
+                Text("请确认风扇已开机，并靠近手机后重试")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                Button("重新扫描") { controller.startScan() }
+                    .buttonStyle(.borderedProminent)
                     .padding(.top, 4)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)

@@ -105,11 +105,12 @@ struct ControlView: View {
             // 状态文字悬浮在风扇底部外缘（与 web 端 .fan-status 的 bottom: -6px 一致）
             .overlay(alignment: .bottom) {
                 fanStatusLabel
-                    .padding(.bottom, 12)
+                    // 负值让标签向下突出风扇外缘
+                    .padding(.bottom, -14)
             }
             .padding(.top, 4)
-            // 状态文字需要渲染在风扇下方，给下方区域留出 36pt 空间（避免被下一张卡片挡住）
-            .padding(.bottom, 36)
+            // 状态文字需要渲染在风扇下方，留出空间让标签不遮挡「风速」卡片（并让下方卡片上移）
+            .padding(.bottom, 22)
     }
 
     private var fanStatusLabel: some View {
@@ -148,6 +149,7 @@ struct ControlView: View {
     private var fanSize: CGFloat { 220 }
 
     private var fanStatusText: String {
+        if !controller.connected { return "未连接" }
         if !status.power { return "已关机" }
         if status.speed == 0 { return "待机" }
         if mode == .normal && status.speed == stormGear { return "暴风" }
@@ -216,8 +218,7 @@ struct ControlView: View {
                                 // 拖动中：只更新本地视觉 + 轻震动，不下发指令
                                 if dragGear != gear {
                                     dragGear = gear
-                                    let impact = UIImpactFeedbackGenerator(style: .light)
-                                    impact.impactOccurred()
+                                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
                                 }
                             }
                             .onEnded { _ in
@@ -228,6 +229,14 @@ struct ControlView: View {
                                 dragGear = nil
                             }
                     )
+            }
+            // 点击轨道任意位置直接跳到对应档位（不依赖拖拽）
+            .contentShape(Rectangle())
+            .onTapGesture { location in
+                let ratio = min(max((location.x - thumbHalf) / trackWidth, 0), 1)
+                let gear = range.lowerBound + Int((ratio * CGFloat(count - 1)).rounded())
+                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                controller.setSpeed(gear)
             }
         }
         .frame(height: 44)
@@ -260,6 +269,7 @@ struct ControlView: View {
             active = (mode == m)
         }
         return Button {
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
             controller.setMode(m)
         } label: {
             Text(m.label)
@@ -311,7 +321,10 @@ struct ControlView: View {
             Spacer()
             Picker("", selection: Binding(
                 get: { status.timer },
-                set: { controller.setTimer($0) }
+                set: {
+                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                    controller.setTimer($0)
+                }
             )) {
                 Text("取消").tag(0)
                 ForEach(1...15, id: \.self) { h in

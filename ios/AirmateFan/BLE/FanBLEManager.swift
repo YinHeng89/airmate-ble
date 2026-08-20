@@ -48,6 +48,9 @@ final class FanBLEManager: NSObject, ObservableObject {
     /// 等待 withResponse 回执的 completion 队列（与每条 writeValue 一一对应，FIFO）
     private var pendingWriteCompletions: [((Bool) -> Void)?] = []
 
+    /// 扫描超时任务（超时后停止扫描，避免一直显示「正在扫描」）
+    private var scanTimeoutTask: Task<Void, Never>?
+
     private override init() {
         super.init()
         central = CBCentralManager(delegate: self, queue: .main)
@@ -56,6 +59,7 @@ final class FanBLEManager: NSObject, ObservableObject {
     // MARK: - 扫描
     func startScan() {
         discovered = []
+        scanTimeoutTask?.cancel()
         guard central.state == .poweredOn else {
             state = .poweredOff
             return
@@ -64,12 +68,24 @@ final class FanBLEManager: NSObject, ObservableObject {
         // 不限服务扫描（部分固件不广播 AF51），didDiscover 里按名称过滤 airmate
         central.scanForPeripherals(withServices: nil,
                                    options: [CBCentralManagerScanOptionAllowDuplicatesKey: false])
+        // 扫描超时：15 秒后自动停止，避免一直显示「正在扫描」
+        scanTimeoutTask = Task { @MainActor [weak self] in
+            try? await Task.sleep(nanoseconds: 15_000_000_000)
+            guard !Task.isCancelled, let self else { return }
+            self.stopScan()
+            self.scanDidTimeout = true
+        }
     }
 
     func stopScan() {
+        scanTimeoutTask?.cancel()
+        scanTimeoutTask = nil
         central.stopScan()
         if case .scanning = state { state = .idle }
     }
+
+    /// 扫描是否超时（供 UI 显示「未找到设备」提示）
+    @Published private(set) var scanDidTimeout = false
 
     // MARK: - 连接
     func connect(_ device: ScannedDevice) {
