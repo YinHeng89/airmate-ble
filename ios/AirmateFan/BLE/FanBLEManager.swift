@@ -45,8 +45,8 @@ final class FanBLEManager: NSObject, ObservableObject {
     /// withoutResponse 会被设备丢弃。默认 withResponse，失败时回退。
     private var preferWithResponse: Bool?
 
-    /// 等待 withResponse 回执的 completion（与最近一次 writeValue 一一对应）
-    private var pendingWriteCompletion: ((Bool) -> Void)?
+    /// 等待 withResponse 回执的 completion 队列（与每条 writeValue 一一对应，FIFO）
+    private var pendingWriteCompletions: [((Bool) -> Void)?] = []
 
     private override init() {
         super.init()
@@ -98,8 +98,8 @@ final class FanBLEManager: NSObject, ObservableObject {
         // 仅在探测失败后（didWriteValueFor 收到错误）才回退 withoutResponse。
         let writeType: CBCharacteristicWriteType = (preferWithResponse ?? true) ? .withResponse : .withoutResponse
         if writeType == .withResponse {
-            // 保存 completion，等 didWriteValueFor 回调后触发
-            pendingWriteCompletion = completion
+            // 入队 completion，等 didWriteValueFor 回调后按 FIFO 取出触发
+            pendingWriteCompletions.append(completion)
         }
         p.writeValue(data, for: char, type: writeType)
         if writeType == .withoutResponse {
@@ -108,12 +108,19 @@ final class FanBLEManager: NSObject, ObservableObject {
         }
     }
 
+    /// 查询状态（连接后先 init 握手，再 query）
     func query() {
         send(FanProtocol.cmdQuery())
     }
 
     func initHandshake() {
-        send(FanProtocol.cmdInit())
+        // init 握手完成后（withResponse 回执成功）再 query，避免两条命令竞争
+        send(FanProtocol.cmdInit()) { [weak self] ok in
+            guard ok else { return }
+            Task { @MainActor in
+                self?.query()
+            }
+        }
     }
 }
 
@@ -123,7 +130,7 @@ final class FanBLEManager: NSObject, ObservableObject {
 extension FanBLEManager: CBCentralManagerDelegate {
     nonisolated func centralManagerDidUpdateState(_ central: CBCentralManager) {
         let st = central.state
-        MainActor.assumeIsolated {
+        Task { @MainActor in
             switch st {
             case .poweredOn:
                 if case .poweredOff = self.state { self.state = .idle }
@@ -144,7 +151,7 @@ extension FanBLEManager: CBCentralManagerDelegate {
             ?? "未知设备"
         guard name.lowercased().contains("airmate") else { return }
         let dev = ScannedDevice(id: peripheral.identifier, name: name, rssi: RSSI.intValue)
-        MainActor.assumeIsolated {
+        Task { @MainActor in
             if let idx = self.discovered.firstIndex(where: { $0.id == dev.id }) {
                 self.discovered[idx] = dev
             } else {
@@ -155,7 +162,7 @@ extension FanBLEManager: CBCentralManagerDelegate {
     }
 
     nonisolated func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
-        MainActor.assumeIsolated {
+        Task { @MainActor in
             self.peripheral = peripheral
             peripheral.delegate = self
             peripheral.discoverServices([FanProtocol.serviceUUID()])
@@ -166,7 +173,7 @@ extension FanBLEManager: CBCentralManagerDelegate {
                                     didFailToConnect peripheral: CBPeripheral,
                                     error: Error?) {
         let msg = error?.localizedDescription ?? "连接失败"
-        MainActor.assumeIsolated {
+        Task { @MainActor in
             self.state = .failed(msg)
         }
     }
@@ -175,7 +182,7 @@ extension FanBLEManager: CBCentralManagerDelegate {
                                     didDisconnectPeripheral peripheral: CBPeripheral,
                                     error: Error?) {
         let msg = error?.localizedDescription
-        MainActor.assumeIsolated {
+        Task { @MainActor in
             self.peripheral = nil
             self.writeChar = nil
             self.notifyChar = nil
@@ -200,20 +207,18 @@ extension FanBLEManager: CBPeripheralDelegate {
                                 didDiscoverCharacteristicsFor service: CBService,
                                 error: Error?) {
         guard error == nil else { return }
-        MainActor.assumeIsolated {
+        Task { @MainActor in
             for char in service.characteristics ?? [] {
                 if char.uuid == FanProtocol.writeUUID() {
                     self.writeChar = char
                 } else if char.uuid == FanProtocol.notifyUUID() {
                     self.notifyChar = char
+                    // 先订阅通知，等 didUpdateNotificationStateFor 确认成功后再发 init/query
                     peripheral.setNotifyValue(true, for: char)
                 }
             }
             if self.writeChar != nil && self.notifyChar != nil {
                 self.state = .connected
-                // 连接并发现特性后，先握手初始化，再查询状态
-                self.initHandshake()
-                self.query()
             }
         }
     }
@@ -222,9 +227,12 @@ extension FanBLEManager: CBPeripheralDelegate {
                                 didUpdateNotificationStateFor characteristic: CBCharacteristic,
                                 error: Error?) {
         let ok = (error == nil)
-        MainActor.assumeIsolated {
+        Task { @MainActor in
             if characteristic.uuid == FanProtocol.notifyUUID(), ok {
                 self.state = .connected
+                // 通知订阅成功后，握手初始化（init 完成后内部会自动 query）
+                print("[BLE] 通知订阅成功，发送 init")
+                self.initHandshake()
             }
         }
     }
@@ -232,12 +240,20 @@ extension FanBLEManager: CBPeripheralDelegate {
     nonisolated func peripheral(_ peripheral: CBPeripheral,
                                 didUpdateValueFor characteristic: CBCharacteristic,
                                 error: Error?) {
-        guard error == nil, let value = characteristic.value else { return }
+        if let error {
+            print("[BLE] didUpdateValue error: \(error.localizedDescription)")
+            return
+        }
+        guard let value = characteristic.value else { return }
         if characteristic.uuid == FanProtocol.notifyUUID() {
+            let hex = value.map { String(format: "%02X", $0) }.joined(separator: " ")
+            print("[BLE] 收到 notify 帧(\(value.count)字节): \(hex)")
             if let status = FanProtocol.decode(value) {
-                MainActor.assumeIsolated {
+                Task { @MainActor in
                     self.onStatus?(status)
                 }
+            } else {
+                print("[BLE] decode 失败（checksum 不匹配或长度不足）")
             }
         }
     }
@@ -247,20 +263,23 @@ extension FanBLEManager: CBPeripheralDelegate {
                                 error: Error?) {
         let failed = (error != nil)
         let msg = error?.localizedDescription ?? ""
-        MainActor.assumeIsolated {
+        Task { @MainActor in
             if failed {
                 // withResponse 写入失败：若尚未确定写模式，回退到 withoutResponse
                 if self.preferWithResponse == nil {
                     self.preferWithResponse = false
                     print("[BLE] withResponse 写入失败，回退 withoutResponse: \(msg)")
                 }
-                self.pendingWriteCompletion?(false)
             } else {
                 // withResponse 写入成功：确认使用 withResponse
                 self.preferWithResponse = true
-                self.pendingWriteCompletion?(true)
             }
-            self.pendingWriteCompletion = nil
+            // 按 FIFO 取出对应这条命令的 completion
+            let completion = self.pendingWriteCompletions.first ?? nil
+            if !self.pendingWriteCompletions.isEmpty {
+                self.pendingWriteCompletions.removeFirst()
+            }
+            completion?(!failed)
         }
     }
 }

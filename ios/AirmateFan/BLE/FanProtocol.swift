@@ -90,7 +90,9 @@ enum FanProtocol {
 
         let bytes = [UInt8](data)
         // 校验: (sum(frame[1:13]) + 4) & 0xFF
-        let checksum = (bytes[1...12].reduce(0, +) + 4) & 0xFF
+        // 注意：必须用 Int 累加，否则 UInt8 求和会溢出（12 字节最大和 3060 > 255）
+        let sum = bytes[1...12].reduce(0) { Int($0) + Int($1) }
+        let checksum = (sum + 4) & 0xFF
         guard checksum == bytes[13] else { return nil }
 
         var status = FanStatus()

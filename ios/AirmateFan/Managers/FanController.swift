@@ -94,7 +94,20 @@ final class FanController: ObservableObject {
         if pendingOps == 0 && now >= coolDownUntil {
             status = s
         } else {
+            // 冷却期内：暂存真实状态，冷却结束后用 latest 刷新，避免状态丢失
             status.raw = s.raw
+            scheduleApplyLatest()
+        }
+    }
+
+    /// 冷却期结束后，用最近一次设备真实状态覆盖本地乐观值
+    private func scheduleApplyLatest() {
+        let remaining = coolDownUntil.timeIntervalSinceNow
+        let wait = max(remaining, 0) + 0.05
+        Task { @MainActor in
+            try? await Task.sleep(nanoseconds: UInt64(wait * 1_000_000_000))
+            guard self.pendingOps == 0, let s = self.latest else { return }
+            self.status = s
         }
     }
 
@@ -129,9 +142,23 @@ final class FanController: ObservableObject {
 
     // MARK: - 控制动作
     func togglePower() {
-        send(status.power ? FanProtocol.cmdOff() : FanProtocol.cmdOn()) {
+        let turningOn = !status.power
+        send(turningOn ? FanProtocol.cmdOn() : FanProtocol.cmdOff()) {
             self.status.power.toggle()
             if !self.status.power { self.status.speed = 0 }
+            // 开机后主动 query，拉取设备真实状态（power/speed/mode），
+            // 避免乐观更新后停在「开机但 speed=0」的错误状态。
+            if turningOn {
+                self.queryAfterCooldown()
+            }
+        }
+    }
+
+    /// 等冷却期结束后主动 query 一次，拉取设备真实状态
+    private func queryAfterCooldown() {
+        Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 500_000_000)
+            self.ble.query()
         }
     }
 
@@ -172,13 +199,20 @@ final class FanController: ObservableObject {
                 self.status.speed = 13
             }
         case .normal:
+            // 参考 web 端：切标准风时，除发 mode=normal 外，还需补发一次对应档位的
+            // speed 命令，否则设备不会真正落到目标档位（只切了模式、档位丢失）。
             let target = (status.speed > 0 && status.speed <= 12) ? status.speed : 1
             send(FanProtocol.cmdMode(.normal)) {
                 self.status.mode = "标准"
                 self.status.speed = target
             }
-            // 标准风切换后，设备会回传当前风速状态帧，由 applyRemote 同步，
-            // 无需再补发 speed 命令（避免双命令竞争）。
+            Task {
+                try? await Task.sleep(nanoseconds: 150_000_000)
+                self.send(FanProtocol.cmdSpeed(target)) {
+                    self.status.mode = "标准"
+                    self.status.speed = target
+                }
+            }
         case .nature, .sleep:
             send(FanProtocol.cmdMode(mode)) {
                 self.status.mode = mode.label

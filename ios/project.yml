@@ -2,7 +2,7 @@ name: AirmateFan
 options:
   bundleIdPrefix: com.airmatefan.app
   deploymentTarget:
-    iOS: "18.0"
+    iOS: "17.0"
   createIntermediateGroups: true
   generateEmptyDirectories: true
 

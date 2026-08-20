@@ -1,60 +1,18 @@
 import SwiftUI
 
-/// 主控制页（精确复刻 web 端 index.html 结构 + style.css 液态玻璃风）
+/// 主控制页（复刻 web 端 index.html 结构 + style.css 液态玻璃风）
+/// 布局：header → 风扇 → 档位卡片 → 风模式卡片 → 开关卡片(摆头/屏显/定时) → 原始数据
 struct ControlView: View {
     @EnvironmentObject private var controller: FanController
     @State private var showScanner = false
-    @State private var selectedTab = 0
-    @State private var previousTab = 0
+    /// 拖动中的本地档位（仅在拖动时覆盖显示，松手才真正下发指令）
+    @State private var dragGear: Int? = nil
 
     private var status: FanStatus { controller.status }
     private var mode: FanMode { status.fanMode }
     private let stormGear = 13
 
     var body: some View {
-        TabView(selection: $selectedTab) {
-            Tab("标准风", systemImage: "fan", value: 0) {
-                mainContent
-            }
-            Tab("自然风", systemImage: "leaf", value: 1) {
-                mainContent
-            }
-            Tab("睡眠风", systemImage: "moon", value: 2) {
-                mainContent
-            }
-            Tab("暴风", systemImage: "wind", value: 3, role: .search) {
-                Color.clear
-            }
-        }
-        .tint(.airmatePrimary)
-        .onChange(of: selectedTab) { _, newValue in
-            if newValue == 3 {
-                // 暴风是独立按钮：点击后切暴风模式，selection 弹回上一个 tab
-                controller.setMode(.storm)
-                selectedTab = previousTab
-            } else {
-                previousTab = newValue
-                if let m = tabTagToMode(newValue) {
-                    controller.setMode(m)
-                }
-            }
-        }
-        .onChange(of: status.mode) { _, _ in syncTabFromDevice() }
-        .onChange(of: status.speed) { _, _ in syncTabFromDevice() }
-        .sheet(isPresented: $showScanner) {
-            ConnectionView(dismiss: { showScanner = false })
-                .environmentObject(controller)
-        }
-        .overlay(alignment: .bottom) {
-            if let toast = controller.toast {
-                toastPill(toast)
-                    .padding(.bottom, 76)
-            }
-        }
-    }
-
-    /// 主内容（风扇 + 档位 + 开关，四个 tab 共享）
-    private var mainContent: some View {
         ZStack {
             backgroundGradient.ignoresSafeArea()
 
@@ -63,6 +21,7 @@ struct ControlView: View {
                     header
                     fanArea
                     speedCard
+                    modeCard
                     switchCard
                     rawCard
                     Spacer(minLength: 24)
@@ -73,34 +32,14 @@ struct ControlView: View {
                 .fixedSize(horizontal: false, vertical: true)
             }
         }
-    }
-
-    private func tabTagToMode(_ tag: Int) -> FanMode? {
-        switch tag {
-        case 0: return .normal
-        case 1: return .nature
-        case 2: return .sleep
-        case 3: return .storm
-        default: return nil
+        .ignoresSafeArea(edges: .bottom)
+        .sheet(isPresented: $showScanner) {
+            ConnectionView(dismiss: { showScanner = false })
+                .environmentObject(controller)
         }
-    }
-
-    /// 设备状态回传后，让底部 Tab 高亮跟随真实风模式。
-    /// 暴风（mode=标准 + speed=13）时高亮「标准风」Tab（因为暴风是独立按钮，不常亮）。
-    private func syncTabFromDevice() {
-        if mode == .normal && status.speed == stormGear {
-            selectedTab = 0  // 暴风：暴风按钮不常亮，标准风 tab 保持
-        } else {
-            let tag: Int
-            switch mode {
-            case .normal: tag = 0
-            case .nature: tag = 1
-            case .sleep:  tag = 2
-            case .storm:  tag = 0
-            }
-            if tag != 3 {  // 3 是暴风，正常情况不会作为选中态
-                selectedTab = tag
-                previousTab = tag
+        .overlay(alignment: .bottom) {
+            if let toast = controller.toast {
+                toastPill(toast)
             }
         }
     }
@@ -111,7 +50,6 @@ struct ControlView: View {
             ZStack(alignment: .topLeading) {
                 LinearGradient(colors: [Color(hex: 0xeef2fb), Color(hex: 0xf1edf6), Color(hex: 0xeaf1f8)],
                                startPoint: .topLeading, endPoint: .bottomTrailing)
-                // 两道光斑：用相对屏宽的尺寸，offset 用负值往屏幕外推，不撑大 ZStack
                 Ellipse().fill(Color(hex: 0x5e7ce2).opacity(0.18))
                     .frame(width: g.size.width * 0.9, height: g.size.width * 0.6)
                     .blur(radius: 40)
@@ -131,6 +69,7 @@ struct ControlView: View {
         HStack {
             Text("AIRMATE 风扇")
                 .font(.system(size: 20, weight: .bold))
+                .foregroundStyle(Color(hex: 0x1f2733))
             Spacer()
             Button {
                 if controller.connected { controller.disconnect() } else { showScanner = true }
@@ -160,34 +99,52 @@ struct ControlView: View {
 
     // MARK: - 风扇区域
     private var fanArea: some View {
-        VStack(spacing: 20) {
-            FanBladesView(power: status.power, speed: status.speed, mode: mode)
-                .frame(width: fanSize, height: fanSize)
-                .onTapGesture { controller.togglePower() }
-
-            // 状态文字
-            fanStatusLabel
-
-            // 扇叶样式切换（暂注释，默认端正样式）
-            // HStack(spacing: 8) {
-            //     styleButton("端正", style: "a")
-            //     styleButton("斜叶", style: "b")
-            // }
-        }
-        .padding(.top, 4)
+        FanBladesView(power: status.power, speed: status.speed, mode: mode)
+            .frame(width: fanSize, height: fanSize)
+            .onTapGesture { controller.togglePower() }
+            // 状态文字悬浮在风扇底部外缘（与 web 端 .fan-status 的 bottom: -6px 一致）
+            .overlay(alignment: .bottom) {
+                fanStatusLabel
+                    .padding(.bottom, 12)
+            }
+            .padding(.top, 4)
+            // 状态文字需要渲染在风扇下方，给下方区域留出 36pt 空间（避免被下一张卡片挡住）
+            .padding(.bottom, 36)
     }
 
     private var fanStatusLabel: some View {
         Text(fanStatusText)
-            .font(.system(size: 15, weight: .semibold))
+            .font(.system(size: 14, weight: .semibold))
             .foregroundStyle(status.power ? Color.airmatePrimary : Color.mutedText)
-            .padding(.horizontal, 20)
+            .padding(.horizontal, 18)
             .padding(.vertical, 6)
-            .background(Color.white.opacity(0.62), in: Capsule())
-            .overlay(Capsule().strokeBorder(Color.white.opacity(0.6), lineWidth: 1))
+            // 液态玻璃背景：backdrop-blur + 半透明白
+            .background {
+                Capsule()
+                    .fill(Color.white.opacity(0.62))
+                    .overlay(
+                        Capsule().strokeBorder(Color.white.opacity(0.85), lineWidth: 0.5)
+                    )
+                    .background(
+                        Capsule()
+                            .fill(.ultraThinMaterial)
+                    )
+            }
+            // 顶部高光内描边（仿 web 端 --glass-hi: inset 0 1px 1px rgba(255,255,255,.85)）
+            .overlay(
+                Capsule()
+                    .strokeBorder(
+                        LinearGradient(
+                            colors: [Color.white.opacity(0.85), Color.white.opacity(0.0)],
+                            startPoint: .top, endPoint: .bottom
+                        ),
+                        lineWidth: 1
+                    )
+            )
+            .shadow(color: Color.black.opacity(0.10), radius: 8, y: 3)
     }
 
-    /// 风扇尺寸：固定 220pt（避免 UIScreen 在某些模式下返回物理像素导致撑爆布局）
+    /// 风扇尺寸：固定 220pt
     private var fanSize: CGFloat { 220 }
 
     private var fanStatusText: String {
@@ -198,10 +155,11 @@ struct ControlView: View {
         return "标准风 · \(status.speed) 档"
     }
 
-    // MARK: - 风速卡片
+    // MARK: - 档位卡片（还原 web 端「风速」滑块：横线 + 刻度点 + 可拖动圆形 thumb）
     private var speedCard: some View {
         card {
-            VStack(alignment: .leading, spacing: 14) {
+            VStack(alignment: .leading, spacing: 0) {
+                Text("风速").font(.system(size: 14, weight: .medium)).foregroundStyle(Color.mutedText)
                 gearSlider
             }
         }
@@ -210,38 +168,116 @@ struct ControlView: View {
     private var gearSlider: some View {
         let range = mode.gearRange
         let count = range.count
-        return VStack(spacing: 8) {
-            // 档位文字 + 当前档
-            HStack {
-                Text("档位")
-                    .font(.system(size: 13))
-                    .foregroundStyle(Color.mutedText)
-                Spacer()
-                Text("\(status.gear) 档")
-                    .font(.system(size: 13, weight: .semibold))
-                    .foregroundStyle(Color.airmatePrimary)
-            }
-            // 刻度点（用 HStack 等分布局，不撑爆宽度）
-            HStack(spacing: 0) {
+        // 拖动中用本地 dragGear，未拖动时用设备真实档位
+        let displayGear = dragGear ?? status.gear
+        let idx = min(max(displayGear - range.lowerBound, 0), max(count - 1, 0))
+        let denominator = CGFloat(max(count - 1, 1))
+        // thumb 半宽，用于把圆形 thumb 中心定位到首/末刻度（web 端 padding 0 22px 效果）
+        let thumbHalf: CGFloat = 20
+
+        return GeometryReader { geo in
+            let trackWidth = geo.size.width - thumbHalf * 2
+            ZStack(alignment: .leading) {
+                // 轨道横线（6px 圆角灰线）
+                Capsule()
+                    .fill(Color(hex: 0x1f2733).opacity(0.10))
+                    .frame(height: 6)
+                    .frame(width: trackWidth)
+                    .frame(maxHeight: .infinity)
+                    .offset(x: thumbHalf)
+
+                // 刻度点
                 ForEach(0..<count, id: \.self) { i in
                     Circle()
-                        .fill(i <= (status.gear - range.lowerBound) ? Color.airmatePrimary : Color(hex: 0xd2d7df))
+                        .fill(i <= idx ? Color.airmatePrimary : Color(hex: 0xd2d7df))
                         .frame(width: 12, height: 12)
                         .overlay(Circle().strokeBorder(Color.white, lineWidth: 2))
-                        .frame(maxWidth: .infinity)
+                        .position(x: thumbHalf + trackWidth * CGFloat(i) / denominator, y: geo.size.height / 2)
+                }
+
+                // 可拖动圆形 thumb（含档位数字）
+                Text("\(displayGear)")
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundStyle(.white)
+                    .frame(width: 40, height: 40)
+                    .background(
+                        LinearGradient(colors: [.airmatePrimary, .airmatePrimaryHover],
+                                       startPoint: .topLeading, endPoint: .bottomTrailing),
+                        in: Circle()
+                    )
+                    .overlay(Circle().strokeBorder(Color.white, lineWidth: 3))
+                    .shadow(color: Color.airmatePrimary.opacity(0.35), radius: 8, y: 3)
+                    .position(x: thumbHalf + trackWidth * CGFloat(idx) / denominator, y: geo.size.height / 2)
+                    .gesture(
+                        DragGesture(minimumDistance: 0)
+                            .onChanged { v in
+                                let ratio = min(max((v.location.x - thumbHalf) / trackWidth, 0), 1)
+                                let gear = range.lowerBound + Int((ratio * CGFloat(count - 1)).rounded())
+                                // 拖动中：只更新本地视觉 + 轻震动，不下发指令
+                                if dragGear != gear {
+                                    dragGear = gear
+                                    let impact = UIImpactFeedbackGenerator(style: .light)
+                                    impact.impactOccurred()
+                                }
+                            }
+                            .onEnded { _ in
+                                // 松手：才真正下发一次档位指令
+                                if let g = dragGear {
+                                    controller.setSpeed(g)
+                                }
+                                dragGear = nil
+                            }
+                    )
+            }
+        }
+        .frame(height: 44)
+        .padding(.top, 6)
+    }
+
+    // MARK: - 风模式卡片（放档位下面）
+    private var modeCard: some View {
+        card {
+            VStack(alignment: .leading, spacing: 14) {
+                Text("风模式").font(.system(size: 14, weight: .medium)).foregroundStyle(Color.mutedText)
+                HStack(spacing: 10) {
+                    ForEach([FanMode.normal, .nature, .sleep, .storm], id: \.self) { m in
+                        modeButton(m)
+                    }
                 }
             }
-            // Slider（系统组件，自带宽度约束）
-            Slider(
-                value: Binding(
-                    get: { Double(status.gear - range.lowerBound) },
-                    set: { controller.setSpeed(range.lowerBound + Int($0.rounded())) }
-                ),
-                in: 0...Double(max(count - 1, 1)),
-                step: 1
-            )
-            .tint(.airmatePrimary)
         }
+    }
+
+    private func modeButton(_ m: FanMode) -> some View {
+        let active: Bool
+        if m == .storm {
+            // 暴风：标准风 mode + 13 档
+            active = (mode == .normal && status.speed == stormGear)
+        } else if m == .normal {
+            // 标准风：mode==标准 且 非 13 档
+            active = (mode == .normal && status.speed != stormGear)
+        } else {
+            active = (mode == m)
+        }
+        return Button {
+            controller.setMode(m)
+        } label: {
+            Text(m.label)
+                .font(.system(size: 13, weight: .semibold))
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 13)
+                .foregroundStyle(active ? .white : Color(hex: 0x1f2733))
+                .background(
+                    active
+                    ? AnyShapeStyle(LinearGradient(colors: [.airmatePrimary, .airmatePrimaryHover],
+                                                   startPoint: .topLeading, endPoint: .bottomTrailing))
+                    : AnyShapeStyle(Color.white.opacity(0.62))
+                )
+                .clipShape(RoundedRectangle(cornerRadius: 16))
+                .overlay(RoundedRectangle(cornerRadius: 16).strokeBorder(active ? Color.clear : Color.white.opacity(0.6), lineWidth: 1))
+                .shadow(color: active ? Color.airmatePrimary.opacity(0.3) : Color.black.opacity(0.05), radius: 8, y: 3)
+        }
+        .buttonStyle(.plain)
     }
 
     // MARK: - 开关卡片（含定时）
@@ -259,7 +295,7 @@ struct ControlView: View {
 
     private func switchRow(_ title: String, isOn: Bool, action: @escaping (Bool) -> Void) -> some View {
         HStack {
-            Text(title).font(.system(size: 15))
+            Text(title).font(.system(size: 15)).foregroundStyle(Color(hex: 0x1f2733))
             Spacer()
             Toggle("", isOn: Binding(get: { isOn }, set: action))
                 .labelsHidden()
@@ -271,7 +307,7 @@ struct ControlView: View {
     // MARK: - 定时行（下拉直接发指令，无设置按钮）
     private var timerRow: some View {
         HStack {
-            Text("定时关机").font(.system(size: 15))
+            Text("定时关机").font(.system(size: 15)).foregroundStyle(Color(hex: 0x1f2733))
             Spacer()
             Picker("", selection: Binding(
                 get: { status.timer },
