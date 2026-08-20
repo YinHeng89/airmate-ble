@@ -213,6 +213,29 @@ python controllers/control_airmate_v2.py
 
 > 依赖仅需 `bleak`。web_server.py 使用 Python 标准库实现 Web 服务，无额外依赖。
 
+### Docker 化部署（含蓝牙）
+
+**目的**：把网页控制器和蓝牙能力一起打包，部署到**任意带有蓝牙适配器（`hci0`）的 Linux 服务器/盒子/树莓派**上，通过浏览器即可远程控制风扇——容器自带 `bluez`+`dbus`，不要求宿主预先安装蓝牙用户态。
+
+新增文件：`Dockerfile`、`docker-compose.yml`、`docker-entrypoint.sh`、`publish.sh`、`.dockerignore`。
+
+- **镜像**：基于 `python:3.11-slim`，内置 `bluez` + `dbus`（容器自带蓝牙用户态，不依赖宿主装 bluez），多架构 `linux/amd64,linux/arm64`（可在 x86 服务器或 arm64 设备通用）。
+- **compose**：`network_mode: host`（web 直出 8080）+ `privileged: true` + 挂载 `/run/dbus` 与 `/dev/bus/usb`，把宿主蓝牙透传给容器内的 `bleak`。
+- **entrypoint**：启动前确保 dbus 系统总线与 `bluetoothd` 就绪，再起 `web_server.py`。
+- **发布**：`./publish.sh` 走 `buildx` 多架构构建并推送 `yinheng1989/airmate-fan` 到 DockerHub。
+- `.dockerignore` 已排除 `huiju-decoded/`（740 个解包小程序源码，纯参考）、venv、日志、文档，不进镜像。
+
+```bash
+# 1. 本机构建并推送多架构镜像
+./publish.sh
+
+# 2. 在「有蓝牙的部署靶机」上拉取并启动
+docker compose pull && docker compose up -d
+# 浏览器访问 http://<靶机IP>:8080 即可控风扇
+```
+
+> **前提**：部署靶机必须有可用的蓝牙适配器（`hciconfig` 能看到 `hci0`）。容器负责蓝牙软件栈，但硬件需宿主提供。多架构镜像意味着 x86_64 服务器和 arm64 设备（如树莓派、RK3588）都能直接跑，无需重新构建。
+
 ---
 
 ## 8. 逆向过程复盘

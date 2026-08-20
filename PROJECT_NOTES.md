@@ -181,3 +181,41 @@ AE21 命令格式       100%
 ```
 
 **协议已完全破解，风扇可完整控制。**
+
+### 9.1 目录整理讨论（2026-08-20）
+
+- `control_airmate_v2.py` 与 `web_server.py` 互不 import，是两份独立控制器；用户曾询问是否把 CLI 版移到 `tools/`，结论：**保持现状**（CLI 是控制器非调试工具，语义上留在 `controllers/` 更合理），暂未移动。
+
+---
+
+## 10. Docker 化与部署（2026-08-20）
+
+**目的**：把网页控制器 + 蓝牙软件栈（bluez/dbus）打包成多架构镜像，部署到**任意带有蓝牙适配器（`hci0`）的 Linux 服务器/盒子/树莓派**上，通过浏览器远程控制风扇。容器自带蓝牙用户态，不要求宿主预装 bluez；硬件（蓝牙适配器）由宿主提供。
+
+### 新增文件
+- `Dockerfile`：基于 `python:3.11-slim`，`apt` 装 `bluez` + `dbus` + `libglib2.0-0`，使容器内 `bleak` 可自行起 `bluetoothd`，不依赖宿主装 bluez。COPY `controllers/ static/ tools/`，ENTRYPOINT 指向 `docker-entrypoint.sh`。
+- `docker-entrypoint.sh`：启动前确保 `/run/dbus/system_bus_socket` 存在（必要时自起 `dbus-daemon`），自起 `bluetoothd`（若宿主未运行），再 `exec python controllers/web_server.py`。
+- `docker-compose.yml`：`network_mode: host` + `privileged: true` + 挂载 `/run/dbus:/run/dbus`、`/dev/bus/usb:/dev/bus/usb`。已 `docker compose config` 校验通过。
+- `.dockerignore`：排除 `huiju-decoded/`、`generated-images/`、`venv/`、`*.pid`、`fan.log`、`.git`、所有 `*.md` 等，避免无关文件进镜像。
+- `publish.sh`：改造为适配本项目——多架构 `buildx`（`linux/amd64,linux/arm64`）构建 `yinheng1989/airmate-fan` 并 `--push`，末尾给部署提示。
+
+### 部署靶机蓝牙核实（RK3588/iStoreOS 现状记录）
+
+在一台可用的 RK3588 设备 iStoreOS 24.10.8（aarch64）上做过环境摸底：
+
+1. Docker `27.3.1` + Compose `v2.39.1` ✅，架构 `aarch64` ✅（镜像 arm64 匹配，可直接跑）。
+2. `lsusb` **无任何蓝牙适配器**（仅 ML307R 4G 模块、VL817 SATA、Microdia 摄像头）。
+3. 宿主**无 bluez**（`hciconfig`/`bluetoothctl` 均不存在）。
+4. `/lib/modules/6.6.144/` **无 `kernel/net/bluetooth/` 与 `kernel/drivers/bluetooth/`**，且 `/lib/firmware` 无 bcm/rtlbt/hci 固件 → **固件未编译蓝牙支持**。
+5. `/dev/ttyUSB1/2` 是 4G 模块 AT 口，非蓝牙。
+
+**结论：这台 RK3588 设备无蓝牙硬件、固件也未带蓝牙驱动，暂不适合做风扇控制的部署靶机**——但 Docker 镜像本身不依赖它，换一台有蓝牙的机器即可使用。
+
+### 该设备的后续可行路径（未实施，仅记录，非 Docker 必要条件）
+- 采购 **USB 蓝牙适配器**（推荐 Realtek RTL8761B/BTUSB 免驱方案），插上后需 OpenWRT 固件提供 `kmod-bluetooth` + `kmod-btusb` + 对应固件。
+- 或刷一个**集成了蓝牙驱动**的 OpenWRT/iStoreOS 固件。
+
+### 状态
+- Docker 化文件已就绪（可构建/推送），多架构镜像可在有蓝牙的 x86_64/arm64 服务器直接部署。
+- 蓝牙控制链路**尚未在真机端到端验证**（待选一台有 `hci0` 的机器：`docker compose up` 后网页控风扇）。
+- 网页 UI 本身可在任意有 Docker 的机器上 `docker compose up` 验证（控真机需蓝牙）。
