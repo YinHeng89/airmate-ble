@@ -1,0 +1,26 @@
+name: AirmateFan
+options:
+  bundleIdPrefix: com.airmatefan.app
+  deploymentTarget:
+    iOS: "18.0"
+  createIntermediateGroups: true
+  generateEmptyDirectories: true
+
+settings:
+  base:
+    PRODUCT_NAME: AirmateFan
+    PRODUCT_BUNDLE_IDENTIFIER: com.airmatefan.app
+    INFOPLIST_FILE: AirmateFan/Info.plist
+    SWIFT_VERSION: "6.0"
+    TARGETED_DEVICE_FAMILY: "1,2"
+    ENABLE_BITCODE: "NO"
+    CODE_SIGN_STYLE: Automatic
+    CODE_SIGN_IDENTITY: "-"
+    ONLY_ACTIVE_ARCH: "NO"
+
+targets:
+  AirmateFan:
+    type: application
+    platform: iOS
+    sources:
+      - path: AirmateFan

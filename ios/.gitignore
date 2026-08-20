@@ -1,0 +1,11 @@
+# XcodeGen 生成的工程（用 xcodegen generate 重建）
+AirmateFan.xcodeproj
+
+# 构建产物
+build/
+DerivedData/
+*.xcarchive
+ipa/
+
+# Xcode 用户数据
+*.xcuserdatad/
