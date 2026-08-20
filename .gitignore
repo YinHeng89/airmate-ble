@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# macOS
+.DS_Store
+
+# 反编译的小程序源码（逆向产物，不提交，仅本地参考）
+huiju-decoded/
+
+# 日志/临时文件
+*.log
