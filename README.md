@@ -3,8 +3,18 @@
 > 目标设备：AIRMATE FS35-SRD133
 > BLE 名称：`airmate-fan`
 > 目标：通过 BLE 实现对风扇的程序化控制
-> 环境：macOS + Python + Bleak
-> 状态：**协议已 100% 破解，可完整控制风扇**
+> 环境：macOS + Python + Bleak（网页版 / CLI）；macOS + Xcode + SwiftUI（iOS App）
+> 状态：**协议已 100% 破解，可完整控制风扇；同时提供 网页版 / CLI / iOS App 三端控制器**
+
+## 项目总览
+
+| 端 | 入口 | 说明 |
+|----|------|------|
+| 网页版 | `controllers/web_server.py` | 可视化风扇 + 档位滑块 + 风模式切换，局域网任意浏览器访问 |
+| 命令行 | `controllers/control_airmate_v2.py` | 交互式 CLI 控制器 |
+| iOS App | `ios/AirmateFan`（SwiftUI） | 原生 App，复刻网页版 UI，含扇叶动画 / 滑块 / 震动反馈 / 扫描超时 |
+
+协议原理与各端共用同一套 BLE 帧格式，详见下文第 2~5 节。iOS App 专属说明见第 7 章。
 
 ---
 
@@ -189,6 +199,52 @@ checksum = (sum(frame[1:13]) + 4) & 0xFF
 
 > 目录区分：`controllers/` 放可直接控制风扇的程序（网页 / CLI），`tools/` 放调试探测脚本。
 
+### iOS App（ios/AirmateFan，SwiftUI）
+
+原生 iOS 控制器，复刻网页版 UI 与交互，使用 CoreBluetooth 直接对接同一套 BLE 协议。
+
+**目录结构**
+
+```text
+ios/AirmateFan/
+├── App/             App 入口（@main）
+├── BLE/
+│   ├── FanBLEManager.swift   封装 CBCentralManager / 扫描 / 写入(AE21) / 订阅(AE22 notify)
+│   └── FanProtocol.swift     命令帧 / 状态帧编解码（与 Python 端同一套协议）
+├── Managers/
+│   └── FanController.swift   业务逻辑：开关机 / 风模式 / 风速 / 摆头 / 定时 + Combine 状态
+├── Models/         数据模型
+├── Views/
+│   ├── ConnectionView.swift  扫描 / 连接 / 超时（15s）/ 连接成功震动
+│   ├── ContentView.swift     主容器
+│   ├── ControlView.swift     风速滑块 + 状态标签 + 风模式按钮 + 定时
+│   └── FanBladesView.swift   扇叶动画（五叶 SVG 复刻 + 0~100 平滑调速）
+└── Resources/      图片 / 资源配置
+
+ios/build_ipa.sh / build_ipa.command   打包脚本（xcodebuild，CODE_SIGNING_ALLOWED=NO）
+ios/project.yml                      XcodeGen 工程定义（可选，生成 .xcodeproj）
+```
+
+**关键实现**
+
+- **扇叶动画**：`FanBladesView` 用 `TimelineView(.animation)` 按帧推进角度，内部维护 `currentPercent`（0~100）以固定速率（`percentRate = 70`/s）逼近 `targetPercent = gear/13*100`，实现开关机 / 切档 / 切模式的平滑加减速，杜绝突变跳帧；`drawingGroup()` 提升渲染性能。
+- **风速滑块**：复刻网页版「横线 + 刻度点 + 拖拽圆点（含档位数字）」样式，拖动时仅本地预览 + 震动，松手才发送指令；支持点击空白刻度直接定位。
+- **状态标签**：风扇底部「液态玻璃」质感标签，未连接时显示「未连接」。
+- **震动反馈**：模式切换、定时、连接成功、风速变化均触发 `UIImpactFeedbackGenerator` / `UINotificationFeedbackGenerator`。
+- **扫描超时**：`FanBLEManager` 15s 无设备则置 `scanDidTimeout`，UI 提示「未找到设备」并提供重试。
+- **协议一致性**：`FanProtocol` 的命令帧 / 状态帧 / checksum 与 Python 端完全一致；切标准风时延时 150ms 补发一次风速指令（对齐网页端行为）。
+
+**构建**
+
+```bash
+# 需 macOS + Xcode
+cd ios
+bash build_ipa.sh        # 产物在 build/ 下（无需签名也可本地跑）
+# 或直接在 Xcode 打开 AirmateFan.xcodeproj 运行到真机（真机需开启蓝牙权限）
+```
+
+> 真机运行需 iOS 13+ 及以上；BLE 权限已在 `Info.plist` 配置。
+
 ### 网页版前端（static/）
 
 - `index.html` / `style.css` / `app.js` 为前端三件套，由 `web_server.py` 直接托管。
@@ -265,3 +321,17 @@ AE21 命令格式       ██████████ 100%
 ```
 
 **协议已完全破解，风扇可通过 BLE 完整控制。**
+
+---
+
+## 10. 三端交付状态
+
+```text
+协议逆向（Python 验证）   ██████████ 100%
+网页版控制器（web）       ██████████ 100%
+命令行控制器（CLI）       ██████████ 100%
+iOS App（SwiftUI）        ██████████ 100%（UI 复刻 + 扇叶动画 + 滑块 + 震动 + 扫描超时）
+Docker 部署（含蓝牙）     ██████████ 就绪（待选有 hci0 的靶机端到端验证）
+```
+
+三端共用同一套 BLE 帧格式与 checksum 算法，协议逻辑完全一致：网页版 / CLI 走 Python + Bleak，iOS App 走 CoreBluetooth（`FanProtocol` 复刻编解码）。
